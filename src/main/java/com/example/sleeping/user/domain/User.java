@@ -32,6 +32,8 @@ public class User {
 
     private boolean comp;
 
+    private Role role;
+
     private User(String userId, String password, String name, String gender, int age, int height, int weight, boolean comp) {
         this.userId = userId;
         this.password = genPw(password);
@@ -41,6 +43,7 @@ public class User {
         this.height = height;
         this.weight = weight;
         this.comp = comp;
+        this.role = Role.USER;
     }
 
     public static User of(UserRequest userRequest) {
@@ -75,5 +78,14 @@ public class User {
 
     public void updatePw(String password) {
         this.password = genPw(password);
+    }
+
+    public void grant() {
+        if(this.role == Role.USER) {
+            this.role = Role.AUTHORIZED_USER;
+            return;
+        }
+
+        this.role = Role.USER;
     }
 }
