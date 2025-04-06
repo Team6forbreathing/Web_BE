@@ -43,7 +43,7 @@ public class AuthController {
             @RequestBody String data
     ) throws JsonProcessingException{
         UserRequest userRequest = snakeMapper.readValue(data, UserRequest.class);
-        authService.login(userRequest);
+        String userName = authService.login(userRequest);
 
         Token token = jwtTokenProvider.generateToken(userRequest.userId());
 
@@ -59,7 +59,7 @@ public class AuthController {
                 .path("/")
                 .build();
 
-        ResponseCookie userNameCookie = ResponseCookie.from("user_name", userRequest.userName())
+        ResponseCookie userNameCookie = ResponseCookie.from("user_name", userName)
                 .httpOnly(false)  // HttpOnly가 아니므로 JavaScript에서 접근 가능
                 .sameSite("Strict")
                 .path("/")

@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCode implements CustomErrorCode{
     NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "User not found"),
     PASS_NO_NULL(HttpStatus.BAD_REQUEST, "U002", "Current and new passwords are required"),
-    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "U003", "Current password is incorrect");
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "U003", "Current password is incorrect"),
+    NO_COOKIE_DATA(HttpStatus.BAD_REQUEST, "U004", "Cookie is null"),
+    NO_ADMIN(HttpStatus.UNAUTHORIZED, "U005", "you are not admin");
 
     private final HttpStatus httpStatus;
     private final String code;
