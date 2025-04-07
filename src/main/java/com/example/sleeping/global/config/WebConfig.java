@@ -1,5 +1,6 @@
 package com.example.sleeping.global.config;
 
+import com.example.sleeping.global.resolver.AdminArgumentResolver;
 import com.example.sleeping.global.resolver.UserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final UserArgumentResolver userArgumentResolver;
+    private final AdminArgumentResolver adminArgumentResolver;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -28,5 +30,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userArgumentResolver);
+        resolvers.add(adminArgumentResolver);
     }
 }

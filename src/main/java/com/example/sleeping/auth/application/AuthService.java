@@ -30,7 +30,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public void login(UserRequest userRequest) {
+    public String login(UserRequest userRequest) {
         User user = userRepository.findByUserId(userRequest.userId()).orElseThrow(
                 () -> CustomException.of(AuthErrorCode.NOT_FOUND)
         );
@@ -38,5 +38,7 @@ public class AuthService {
         if(!user.checkPw(userRequest.userPw())) {
             throw CustomException.of(AuthErrorCode.WRONG_PW);
         }
+
+        return user.getName();
     }
 }
