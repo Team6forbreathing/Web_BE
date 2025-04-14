@@ -60,9 +60,6 @@ public class SensorDataService {
                     .addField("ppgIR", data.ppgIR())
                     .addField("ppgR", data.ppgR())
                     .addField("ppgG", data.ppgG())
-                    .addField("statusIR", data.statusIR())
-                    .addField("statusR", data.statusR())
-                    .addField("statusG", data.statusG())
                     .time(Instant.ofEpochMilli(data.timestamp()), WritePrecision.MS);
             points.add(point);
         }
