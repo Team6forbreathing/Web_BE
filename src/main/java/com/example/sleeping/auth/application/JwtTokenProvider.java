@@ -25,9 +25,9 @@ public class JwtTokenProvider {
 
     @Value("${secret.key}")
     private String secretKey;
-    @Value("${access.token.expiry}")
+    @Value("${secret.access.expiry}")
     private long accessTokenExpired;
-    @Value("${refesh.token.expiry}")
+    @Value("${secret.refresh.expiry}")
     private long refreshTokenExpired;
 
     private String makeAccessToken(String userId) {

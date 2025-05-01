@@ -2,9 +2,7 @@ package com.example.sleeping.data.application;
 
 import com.example.sleeping.data.presentation.dto.AccMeasurement;
 import com.example.sleeping.data.presentation.dto.PpgMeasurement;
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.InfluxDBClientFactory;
-import com.influxdb.client.WriteApiBlocking;
+import com.influxdb.client.*;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import jakarta.annotation.PostConstruct;
@@ -19,13 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SensorDataService {
-    @Value("${influx.bucket}")
+    @Value("${influxdb.bucket}")
     private String bucket;
-    @Value("${influx.org}")
+    @Value("${influxdb.org}")
     private String org;
-    @Value("${influx.token}")
+    @Value("${influxdb.token}")
     private String token;
-    @Value("${influx.url}")
+    @Value("${influxdb.url}")
     private String influxUrl;
 
     private InfluxDBClient client;
@@ -34,6 +32,7 @@ public class SensorDataService {
     @PostConstruct
     private void init() {
         client = InfluxDBClientFactory.create(influxUrl, token.toCharArray(), org, bucket);
+
         writeApi = client.getWriteApiBlocking();
     }
 
@@ -42,6 +41,7 @@ public class SensorDataService {
         for (AccMeasurement data : accList) {
             Point point = Point.measurement("acc_data")
                     .addTag("userId", userId)
+                    .addField("dataId", data.id())
                     .addField("accX", data.accX())
                     .addField("accY", data.accY())
                     .addField("accZ", data.accZ())
@@ -57,9 +57,13 @@ public class SensorDataService {
         for (PpgMeasurement data : ppgList) {
             Point point = Point.measurement("ppg_data")
                     .addTag("userId", userId)
+                    .addField("dataId", data.id())
                     .addField("ppgIR", data.ppgIR())
                     .addField("ppgR", data.ppgR())
                     .addField("ppgG", data.ppgG())
+                    .addField("statusIR", data.statusIR())
+                    .addField("statusR", data.statusR())
+                    .addField("statusG", data.statusG())
                     .time(Instant.ofEpochMilli(data.timestamp()), WritePrecision.MS);
             points.add(point);
         }
