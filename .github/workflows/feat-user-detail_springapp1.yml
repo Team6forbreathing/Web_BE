@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy JAR app to Azure Web App - springapp1
+name: Build and deploy JAR app to Azure Web App - be-1
 
 on:
   push:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read  
 
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +19,19 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'microsoft'
+          distribution: 'temurin'  
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build --no-daemon
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: '${{ github.workspace }}/build/libs/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,18 +39,32 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-      
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
-      
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'springapp1'
+          app-name: 'be-1'  
           slot-name: 'Production'
           package: '*.jar'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_671764E7AE5C479CAA9DCD1A9CA0DA81 }}
+          startup-command: 'java -Duser.timezone=GMT+9 -Djava.security.egd=file:/dev/./urandom -jar /site/wwwroot/sleeping-0.0.1-SNAPSHOT.jar'
+
+env:
+  # 환경 변수를 GitHub Secrets에서 참조
+  MYSQL_URL: ${{ secrets.MYSQL_URL }}
+  MYSQL_USER: ${{ secrets.MYSQL_USER }}
+  MYSQL_PW: ${{ secrets.MYSQL_PW }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ACCESS_TOKEN_EXPIRY: ${{ secrets.ACCESS_TOKEN_EXPIRY }}
+  REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+  INFLUX_URL: ${{ secrets.INFLUX_URL }}
+  INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+  INFLUX_BUCKET: ${{ secrets.INFLUX_BUCKET }}
+  INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
