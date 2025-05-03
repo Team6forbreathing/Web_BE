@@ -44,6 +44,10 @@ jobs:
             MYSQL_URL=${{ secrets.MYSQL_URL }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PW=${{ secrets.MYSQL_PW }}
+            INFLUX_URL=${{ secrets.INFLUX_URL }}
+            INFLUX_ORG=${{ secrets.INFLUX_ORG }}
+            INFLUX_BUCKET=${{ secrets.INFLUX_BUCKET }}
+            INFLUX_TOKEN=${{ secrets.INFLUX_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
