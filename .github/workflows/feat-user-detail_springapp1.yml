@@ -3,7 +3,7 @@ name: Build and deploy JAR app to Azure Web App - be-1
 on:
   push:
     branches:
-      - feat/uset-detail
+      - feat/user-detail
   workflow_dispatch:
 
 jobs:
