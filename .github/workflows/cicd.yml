@@ -3,7 +3,7 @@ name: Spring Boot CI/CD
 on:
   push:
     branches:
-      - feat/user-detail
+      - main
   pull_request:
     branches:
       - main
