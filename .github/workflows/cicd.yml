@@ -3,10 +3,10 @@ name: Spring Boot CI/CD with Scan
 on:
   push:
     branches:
-      - feat/user-detail
+      - main
   pull_request:
     branches:
-      - feat/user-detail
+      - main
 
 jobs:
   build-and-deploy:
@@ -52,7 +52,7 @@ jobs:
       # Step 5: 테스트 보고서 업로드
       - name: 테스트 보고서 업로드
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: build/reports/tests/test/
