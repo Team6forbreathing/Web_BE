@@ -1,16 +1,16 @@
 name: Build and deploy JAR app to Azure Web App - be-1
- 
+
 on:
   push:
     branches:
-      - feat/user-detail
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  
+          distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -27,11 +27,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build --no-daemon
 
+      - name: List built files
+        run: ls -la build/libs/
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/build/libs/*.jar'
+          path: '${{ github.workspace }}/build/libs/sleeping-0.0.1-SNAPSHOT.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,18 +49,21 @@ jobs:
         with:
           name: java-app
 
+      - name: List downloaded files
+        run: ls -la
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'be-1'  
+          app-name: 'be-1'
           slot-name: 'Production'
-          package: '*.jar'
+          package: 'sleeping-0.0.1-SNAPSHOT.jar'  # 명시적으로 JAR 파일 지정
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_671764E7AE5C479CAA9DCD1A9CA0DA81 }}
           startup-command: 'java -Duser.timezone=GMT+9 -Djava.security.egd=file:/dev/./urandom -jar /site/wwwroot/sleeping-0.0.1-SNAPSHOT.jar'
 
 env:
-  # 환경 변수를 GitHub Secrets에서 참조
+  ACTIONS_STEP_DEBUG: true
   MYSQL_URL: ${{ secrets.MYSQL_URL }}
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
   MYSQL_PW: ${{ secrets.MYSQL_PW }}
