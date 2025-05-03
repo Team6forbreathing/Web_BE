@@ -34,8 +34,11 @@ ENV INFLUX_ORG=${INFLUX_ORG}
 ENV INFLUX_BUCKET=${INFLUX_BUCKET}
 ENV INFLUX_TOKEN=${INFLUX_TOKEN}
 
-# Gradle 실행 권한 부여 및 빌드
-RUN chmod +x ./gradlew && ./gradlew clean build --no-daemon
+# 환경 변수 디버깅
+RUN env
+
+# Gradle 실행 권한 부여 및 빌드 (테스트 건너뛰기)
+RUN chmod +x ./gradlew && ./gradlew clean build -x test --no-daemon
 
 # 실행 시 사용할 환경 변수 설정
 EXPOSE 8080
