@@ -138,7 +138,7 @@ jobs:
             docker network connect app-network mysql-container || true
             docker network connect app-network influxdb || true
             # 새 컨테이너 실행
-            docker run -d --name spring_app \
+            docker run -d -p --name spring_app \
               --network app-network \
               -p 88:8080 \
               -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
