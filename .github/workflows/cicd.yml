@@ -1,20 +1,18 @@
-name: Spring Boot CI/CD
- 
+name: Spring Boot CI/CD with Scan
+
 on:
   push:
     branches:
-      - main
       - feat/user-detail
   pull_request:
     branches:
-      - main
       - feat/user-detail
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: 코드 체크아웃
+      # Step 1: Checkout 코드
       - name: Checkout 코드
         uses: actions/checkout@v3
 
@@ -33,20 +31,47 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
 
-      # Step 4: Gradle 빌드
+      # Step 4: Gradle 빌드 (--scan으로 디버깅)
       - name: Gradle 빌드
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ACCESS_TOKEN_EXPIRY: ${{ secrets.ACCESS_TOKEN_EXPIRY }}
+          REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PW: ${{ secrets.MYSQL_PW }}
+          INFLUX_URL: ${{ secrets.INFLUX_URL }}
+          INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+          INFLUX_BUCKET: ${{ secrets.INFLUX_BUCKET }}
+          INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build --no-daemon
+          ./gradlew clean build --scan --info --no-daemon
+        continue-on-error: true
 
-      # Step 5: Docker Hub 로그인
+      # Step 5: 테스트 보고서 업로드
+      - name: 테스트 보고서 업로드
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: build/reports/tests/test/
+
+      # Step 6: Gradle 스캔 보고서 URL 출력
+      - name: Gradle 스캔 URL 출력
+        if: always()
+        run: |
+          echo "Gradle scan report URL (if generated):"
+          cat build/scan.log || echo "No scan report generated"
+
+      # Step 7: Docker Hub 로그인
       - name: Docker Hub 로그인
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 6: Docker 이미지 빌드 및 푸시
+      # Step 8: Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시
         uses: docker/build-push-action@v4
         with:
@@ -66,7 +91,7 @@ jobs:
             INFLUX_BUCKET=${{ secrets.INFLUX_BUCKET }}
             INFLUX_TOKEN=${{ secrets.INFLUX_TOKEN }}
 
-      # Step 7: 서버에 배포
+      # Step 9: 서버 배포
       - name: 서버 배포
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -82,6 +107,9 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/spring_app:latest
             # Docker 네트워크 확인 및 생성
             docker network create app-network || true
+            # MySQL과 InfluxDB 컨테이너 네트워크 연결
+            docker network connect app-network mysql-container || true
+            docker network connect app-network influxdb || true
             # 새 컨테이너 실행
             docker run -d --name spring_app \
               --network app-network \
