@@ -29,6 +29,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.mysql:mysql-connector-j:8.2.0'
+    implementation 'com.influxdb:influxdb-client-java:7.2.0'
+    implementation "com.influxdb:flux-dsl:7.2.0"
+
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'

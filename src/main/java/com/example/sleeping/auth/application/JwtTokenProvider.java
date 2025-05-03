@@ -3,6 +3,8 @@ package com.example.sleeping.auth.application;
 import com.example.sleeping.auth.token.Token;
 import com.example.sleeping.global.exception.CustomException;
 import com.example.sleeping.global.exception.errorCode.AuthErrorCode;
+import com.example.sleeping.global.exception.errorCode.UserErrorCode;
+import com.example.sleeping.user.domain.User;
 import com.example.sleeping.user.persistent.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -23,9 +25,9 @@ public class JwtTokenProvider {
 
     @Value("${secret.key}")
     private String secretKey;
-    @Value("${access.token.expiry}")
+    @Value("${secret.access.expiry}")
     private long accessTokenExpired;
-    @Value("${refesh.token.expiry}")
+    @Value("${secret.refresh.expiry}")
     private long refreshTokenExpired;
 
     private String makeAccessToken(String userId) {
@@ -98,5 +100,15 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false; // 기타 예외 발생 (잘못된 토큰 등)
         }
+    }
+
+    public String tokenRole(String token) {
+        String userId = tokenParsing(token);
+
+        User user = userRepository.findByUserId(userId).orElseThrow(
+                () -> CustomException.of(UserErrorCode.NOT_FOUND)
+        );
+
+        return user.getRole().name();
     }
 }
