@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - feat/user-detail
   pull_request:
     branches:
       - main
+      - feat/user-detail
 
 jobs:
   build-and-deploy:
