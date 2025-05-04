@@ -21,12 +21,19 @@ public class AuthService {
         if(userRequest.userId() == null || userRequest.userPw() == null || userRequest.userName() == null) {
             throw CustomException.of(AuthErrorCode.INVALID_DATA_FIELD);
         }
+        if(containSpace(userRequest.userName())) {
+            throw CustomException.of(AuthErrorCode.USER_NAME_SPACE);
+        }
         if(userRepository.existsUserByUserId(userRequest.userId())) {
             throw CustomException.of(AuthErrorCode.DUPLICATION);
         }
 
         User user = User.of(userRequest);
         userRepository.save(user);
+    }
+
+    private boolean containSpace(String userName) {
+        return userName.contains(" ");
     }
 
     @Transactional(readOnly = true)
