@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/sensor")
 public class SensorDataController {
     private final AsyncQueueService asyncQueueService;
-    private final SensorDataService sensorDataService;
 
     @PostMapping
     public ResponseEntity<?> createSensorData(
@@ -28,9 +27,7 @@ public class SensorDataController {
             @LoginUser String userId
     ) {
         DataRequest dataRequest = DataRequest.from(userId, sensorData);
-        //asyncQueueService.addRequestToQueue(dataRequest);
-        sensorDataService.writePpgDataBulk(dataRequest.data().ppgList(), userId);
-        sensorDataService.writeAccDataBulk(dataRequest.data().accList(), userId);
+        asyncQueueService.addRequestToQueue(dataRequest);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
