@@ -13,7 +13,8 @@ public record UserResponse(
         int userAge,
         int userHeight,
         int userWeight,
-        boolean userComp
+        boolean userComp,
+        String userRole
 ) {
     public static UserResponse of(User user) {
         return new UserResponse(
@@ -23,7 +24,8 @@ public record UserResponse(
                 user.getAge(),
                 user.getHeight(),
                 user.getWeight(),
-                user.isComp()
+                user.isComp(),
+                user.getRole().name()
         );
     }
 }
