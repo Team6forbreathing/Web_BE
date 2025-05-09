@@ -1,5 +1,6 @@
 package com.example.sleeping.user.domain;
 
+import com.example.sleeping.user.application.command.UserCommand;
 import com.example.sleeping.user.presentation.dto.UserRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -46,16 +47,16 @@ public class User {
         this.role = Role.USER;
     }
 
-    public static User of(UserRequest userRequest) {
+    public static User of(UserCommand userCommand) {
         return new User(
-                userRequest.userId(),
-                userRequest.userPw(),
-                userRequest.userName(),
-                userRequest.userGender(),
-                userRequest.userAge(),
-                userRequest.userHeight(),
-                userRequest.userWeight(),
-                userRequest.userComp()
+                userCommand.userId(),
+                userCommand.userPw(),
+                userCommand.userName(),
+                userCommand.userGender(),
+                userCommand.userAge(),
+                userCommand.userHeight(),
+                userCommand.userWeight(),
+                userCommand.userComp()
         );
     }
 
