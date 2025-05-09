@@ -17,7 +17,7 @@ public class AdminController {
 
     @GetMapping
     public String admin(
-            @AdminUser String  userId
+            @AdminUser String userId
     ) {
         return "admin.html";
     }
