@@ -2,6 +2,7 @@ package com.example.sleeping.auth.application;
 
 import com.example.sleeping.global.exception.CustomException;
 import com.example.sleeping.global.exception.errorCode.AuthErrorCode;
+import com.example.sleeping.user.application.command.UserCommand;
 import com.example.sleeping.user.domain.User;
 import com.example.sleeping.user.persistent.UserRepository;
 import com.example.sleeping.user.presentation.dto.UserRequest;
@@ -17,18 +18,18 @@ public class AuthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void register(UserRequest userRequest) {
-        if(userRequest.userId() == null || userRequest.userPw() == null || userRequest.userName() == null) {
+    public void register(UserCommand userCommand) {
+        if(userCommand.userId() == null || userCommand.userPw() == null || userCommand.userName() == null) {
             throw CustomException.of(AuthErrorCode.INVALID_DATA_FIELD);
         }
-        if(containSpace(userRequest.userName())) {
+        if(containSpace(userCommand.userName())) {
             throw CustomException.of(AuthErrorCode.USER_NAME_SPACE);
         }
-        if(userRepository.existsUserByUserId(userRequest.userId())) {
+        if(userRepository.existsUserByUserId(userCommand.userId())) {
             throw CustomException.of(AuthErrorCode.DUPLICATION);
         }
 
-        User user = User.of(userRequest);
+        User user = User.of(userCommand);
         userRepository.save(user);
     }
 
