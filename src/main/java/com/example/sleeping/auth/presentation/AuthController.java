@@ -8,6 +8,7 @@ import com.example.sleeping.global.dto.Message;
 import com.example.sleeping.global.exception.CustomException;
 import com.example.sleeping.global.exception.errorCode.AuthErrorCode;
 import com.example.sleeping.user.application.UserService;
+import com.example.sleeping.user.application.command.UserCommand;
 import com.example.sleeping.user.presentation.dto.UserRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,11 +35,12 @@ public class AuthController {
             @RequestBody String data
     ) throws JsonProcessingException {
         UserRequest userRequest = snakeMapper.readValue(data, UserRequest.class);
-        authService.register(userRequest);
+        authService.register(UserCommand.of(userRequest));
 
         return new ResponseEntity<>(
                 Message.of("User registered successfully"),
-                HttpStatus.CREATED);
+                HttpStatus.CREATED
+        );
     }
 
     @PostMapping("/login")
