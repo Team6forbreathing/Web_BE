@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WorkerLauncher implements ApplicationListener<ApplicationReadyEvent> {
     private final AsyncQueueService asyncQueueService;
-    private static final int MAX_POOL_SIZE = 6;
+    private static final int MAX_POOL_SIZE = 2;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {

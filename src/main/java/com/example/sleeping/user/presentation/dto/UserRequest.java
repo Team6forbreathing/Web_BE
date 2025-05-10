@@ -1,7 +1,5 @@
 package com.example.sleeping.user.presentation.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 public record UserRequest(
         String userId,
         String userPw,

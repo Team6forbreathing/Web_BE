@@ -12,7 +12,8 @@ public enum AuthErrorCode implements CustomErrorCode{
     INVALID_BEARER_TOKEN(HttpStatus.BAD_REQUEST, "A005", "Invalid token format. Expected 'Bearer <token>'."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "A006", "Invalid access token"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A007", "Token has expired"),
-    INVALID_DATA_FIELD(HttpStatus.BAD_REQUEST, "A008", "user_id, user_pw, and user_name are required");
+    INVALID_DATA_FIELD(HttpStatus.BAD_REQUEST, "A008", "user_id, user_pw, and user_name are required"),
+    USER_NAME_SPACE(HttpStatus.BAD_REQUEST, "A009", "user name must be no space");
 
     private final HttpStatus httpStatus;
     private final String code;
