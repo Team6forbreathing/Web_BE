@@ -7,11 +7,16 @@ import com.example.sleeping.data.presentation.dto.SensorData;
 import com.example.sleeping.global.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -20,6 +25,7 @@ import java.util.List;
 @RequestMapping("/sensor")
 public class SensorDataController {
     private final AsyncQueueService asyncQueueService;
+    private final SensorDataService sensorDataService;
 
     @PostMapping
     public ResponseEntity<?> createSensorData(
@@ -33,18 +39,38 @@ public class SensorDataController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getSensorData(
-            @RequestParam String dataType,
-            @RequestParam LocalDateTime startTime,
-            @RequestParam LocalDateTime endTime,
+    public ResponseEntity<?> getSensorDataFileList(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @LoginUser String userId
-    ) {
-        List<?> dataList = null;
-
-        if(dataList == null) {
-            throw new RuntimeException("잘못된 인수 사용");
-        }
-
+    ) throws IOException {
+        List<String> dataList = sensorDataService.readDataFileNameList(date, userId);
         return new ResponseEntity<>(dataList, HttpStatus.OK);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam("file") String filename,
+            @LoginUser String userId
+    ) throws IOException {
+        Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
+
+        String contentType = "application/octat-stream; charset=utf-8";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentDispositionFormData("attachment", filename);
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/set")
+    public ResponseEntity<?> makefile(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @LoginUser String userId
+    ) throws IOException {
+        sensorDataService.generateFilesForDate(date, userId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
