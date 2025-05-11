@@ -202,7 +202,7 @@ public class SensorDataService {
             Iterator<AccMeasurement> iterator = accData.iterator();
             while (iterator.hasNext()) {
                 AccMeasurement m = iterator.next();
-                if (m.id() == 0 && !current.isEmpty()) {
+                if (m.id() == 1 && !current.isEmpty()) {
                     makeFile(date, "accData", userId, current, count++);
                     current = new ArrayList<>();
                 }
@@ -220,7 +220,7 @@ public class SensorDataService {
             Iterator<PpgMeasurement> iterator = ppgData.iterator();
             while (iterator.hasNext()) {
                 PpgMeasurement m = iterator.next();
-                if (m.id() == 0 && !current.isEmpty()) {
+                if (m.id() == 1 && !current.isEmpty()) {
                     makeFile(date, "ppgData", userId, current, count++);
                     current = new ArrayList<>();
                 }
