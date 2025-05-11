@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -194,6 +195,47 @@ public class SensorDataService {
             return;
         }
 
+        if(!accData.isEmpty()) {
+            List<AccMeasurement> current = new ArrayList<>();
+            int count = 0;
+
+            Iterator<AccMeasurement> iterator = accData.iterator();
+            while (iterator.hasNext()) {
+                AccMeasurement m = iterator.next();
+                if (m.id() == 0 && !current.isEmpty()) {
+                    makeFile(date, "accData", userId, current, count++);
+                    current = new ArrayList<>();
+                }
+                current.add(m);
+            }
+
+            if (!current.isEmpty()) {
+                makeFile(date, "accData", userId, current, count);
+            }
+        }
+        if(!ppgData.isEmpty()) {
+            List<PpgMeasurement> current = new ArrayList<>();
+            int count = 0;
+
+            Iterator<PpgMeasurement> iterator = ppgData.iterator();
+            while (iterator.hasNext()) {
+                PpgMeasurement m = iterator.next();
+                if (m.id() == 0 && !current.isEmpty()) {
+                    makeFile(date, "ppgData", userId, current, count++);
+                    current = new ArrayList<>();
+                }
+                current.add(m);
+            }
+
+            if (!current.isEmpty()) {
+                makeFile(date, "ppgData", userId, current, count);
+            }
+        }
+    }
+
+    private void makeFile(
+            LocalDate date, String dataType, String userId, List<?> data, int count
+    ) throws IOException {
         Path dateDir = baseDir.resolve(date.toString());
         Files.createDirectories(dateDir);
 
@@ -203,26 +245,13 @@ public class SensorDataService {
         ObjectMapper mapper = new ObjectMapper();
         CsvMapper csvMapper = new CsvMapper();
 
-        if(!accData.isEmpty()) {
-            Path jsonFile = userDir.resolve("accData.json");
-            mapper.writeValue(jsonFile.toFile(), accData);
+        String fileName = dataType + "_" + count;
+        Path jsonFile = userDir.resolve(fileName + ".json");
+        mapper.writeValue(jsonFile.toFile(), data);
 
-            Path csvFile = userDir.resolve("accData.csv");
-            CsvSchema schema = csvMapper.schemaFor(AccMeasurement.class)
-                    .withHeader();  // 첫 줄에 헤더 포함
-            csvMapper.writer(schema)
-                    .writeValue(csvFile.toFile(), accData);
-        }
-        if(!ppgData.isEmpty()) {
-            Path jsonFile = userDir.resolve("ppgData.json");
-            mapper.writeValue(jsonFile.toFile(), ppgData);
-
-            Path csvFile = userDir.resolve("ppgData.csv");
-            CsvSchema schema = csvMapper.schemaFor(PpgMeasurement.class)
-                    .withHeader();  // 첫 줄에 헤더 포함
-            csvMapper.writer(schema)
-                    .writeValue(csvFile.toFile(), ppgData);
-        }
+        Path csvFile = userDir.resolve(fileName + ".csv");
+        CsvSchema schema = csvMapper.schemaFor(data.get(0).getClass()).withHeader();  // 첫 줄에 헤더 포함
+        csvMapper.writer(schema).writeValue(csvFile.toFile(), data);
     }
 
     public List<String> readDataFileNameList(LocalDate date, String userId) throws IOException {
