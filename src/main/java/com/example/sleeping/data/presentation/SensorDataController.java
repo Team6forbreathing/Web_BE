@@ -5,6 +5,7 @@ import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.data.application.dto.DataRequest;
 import com.example.sleeping.data.presentation.dto.SensorData;
 import com.example.sleeping.global.annotation.LoginUser;
+import com.example.sleeping.global.dto.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -35,7 +36,10 @@ public class SensorDataController {
         DataRequest dataRequest = DataRequest.from(userId, sensorData);
         asyncQueueService.addRequestToQueue(dataRequest);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                Message.of("sending successfully"),
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping
