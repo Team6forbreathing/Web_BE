@@ -44,11 +44,12 @@ public class SensorDataController {
 
     @GetMapping
     public ResponseEntity<?> getSensorDataFileList(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @LoginUser String userId
     ) throws IOException {
-        List<String> dataList = sensorDataService.readDataFileNameList(date, userId);
-        return new ResponseEntity<>(dataList, HttpStatus.OK);
+        List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
+        return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
 
     @GetMapping("/download")

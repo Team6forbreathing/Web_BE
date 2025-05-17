@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -254,18 +255,27 @@ public class SensorDataService {
         csvMapper.writer(schema).writeValue(csvFile.toFile(), data);
     }
 
-    public List<String> readDataFileNameList(LocalDate date, String userId) throws IOException {
-        Path dir = baseDir.resolve(date.toString());
-        Path userDir = dir.resolve(userId);
-        if (!Files.exists(userDir)) {
-            return Collections.emptyList();
+    public List<List<String>> readDataFileNameList(
+            LocalDate startDate, LocalDate endDate, String userId
+    ) throws IOException {
+        List<List<String>> result = new ArrayList<>();
+        LocalDate date = startDate;
+        while(endDate.isAfter(date) || endDate.isEqual(date)) {
+            Path dir = baseDir.resolve(date.toString());
+            Path userDir = dir.resolve(userId);
+
+            try (Stream<Path> files = Files.list(userDir)) {
+                result.add(files.map(Path::getFileName)
+                        .map(Path::toString)
+                        .collect(Collectors.toList()));
+            } catch (NoSuchFileException e) {
+                result.add(Collections.EMPTY_LIST);
+            }
+
+            date = date.plusDays(1);
         }
 
-        try (Stream<Path> files = Files.list(userDir)) {
-            return files.map(Path::getFileName)
-                    .map(Path::toString)
-                    .collect(Collectors.toList());
-        }
+        return result;
     }
 
     public Resource getFileForDownload(LocalDate date, String userId, String filename) throws IOException {
