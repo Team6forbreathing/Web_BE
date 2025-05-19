@@ -4,6 +4,9 @@ import com.example.sleeping.auth.token.Token;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class CookieUtil {
     public static HttpHeaders cookieSet(Token token, String userName) {
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", token.accessToken())
@@ -18,7 +21,8 @@ public class CookieUtil {
                 .path("/")
                 .build();
 
-        ResponseCookie userNameCookie = ResponseCookie.from("user_name", userName)
+        String encodedUserName = Base64.getEncoder().encodeToString(userName.getBytes(StandardCharsets.UTF_8));
+        ResponseCookie userNameCookie = ResponseCookie.from("user_name", encodedUserName)
                 .httpOnly(false)  // HttpOnly가 아니므로 JavaScript에서 접근 가능
                 .sameSite("Strict")
                 .path("/")
