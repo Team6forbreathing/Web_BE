@@ -11,23 +11,20 @@ public class CookieUtil {
     public static HttpHeaders cookieSet(Token token, String userName) {
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", token.accessToken())
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", token.refreshToken())
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .build();
 
         String encodedUserName = Base64.getEncoder().encodeToString(userName.getBytes(StandardCharsets.UTF_8));
         ResponseCookie userNameCookie = ResponseCookie.from("user_name", encodedUserName)
                 .httpOnly(false)  // HttpOnly가 아니므로 JavaScript에서 접근 가능
-                .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .build();
 
