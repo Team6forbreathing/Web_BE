@@ -10,13 +10,13 @@ import java.util.Base64;
 public class CookieUtil {
     public static HttpHeaders cookieSet(Token token, String userName) {
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", token.accessToken())
-                .httpOnly(true)
+                .httpOnly(false)
                 .sameSite("Strict")
                 .path("/")
                 .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", token.refreshToken())
-                .httpOnly(true)
+                .httpOnly(false)
                 .sameSite("Strict")
                 .path("/")
                 .build();
