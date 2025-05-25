@@ -68,4 +68,9 @@ public class UserService {
             throw CustomException.of(UserErrorCode.WRONG_PASSWORD);
         }
     }
+
+    @Transactional(readOnly = true)
+    public long countUserNumber() {
+        return userRepository.count();
+    }
 }
