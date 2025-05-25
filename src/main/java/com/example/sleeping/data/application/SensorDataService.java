@@ -51,7 +51,7 @@ public class SensorDataService {
     private InfluxDBClient client;
     private WriteApiBlocking writeApi;
 
-    private final Path baseDir = Paths.get("data-storage");
+    private final Path baseDir = Paths.get("/app/uploads");
 
     @PostConstruct
     private void init() {
