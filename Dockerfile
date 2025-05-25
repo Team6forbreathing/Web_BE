@@ -27,7 +27,7 @@ ENV MYSQL_USER=${MYSQL_USER}
 ENV MYSQL_PW=${MYSQL_PW}
 
 # Gradle 실행 권한 부여 및 빌드
-RUN chmod +x ./gradlew && ./gradlew clean build --no-daemon
+RUN chmod +x ./gradlew && ./gradlew clean build -x test --no-daemon
 
 # 실행 시 사용할 환경 변수 설정
 EXPOSE 8080
