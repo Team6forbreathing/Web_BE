@@ -141,6 +141,7 @@ jobs:
             docker run -d --name spring_app \
               --network app-network \
               -p 88:8080 \
+              -v sensor-data-file-volume:/app/uploads
               -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
               -e ACCESS_TOKEN_EXPIRY=${{ secrets.ACCESS_TOKEN_EXPIRY }} \
               -e REFRESH_TOKEN_EXPIRY=${{ secrets.REFRESH_TOKEN_EXPIRY }} \
