@@ -71,6 +71,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public long countUserNumber() {
-        return userRepository.count();
+        User user = userRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> CustomException.of(UserErrorCode.NOT_FOUND));
+        return user.getId();
     }
 }
