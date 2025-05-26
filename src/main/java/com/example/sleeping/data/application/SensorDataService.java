@@ -1,5 +1,7 @@
 package com.example.sleeping.data.application;
 
+import com.example.sleeping.data.domain.DataCount;
+import com.example.sleeping.data.persisteent.DataCountRepository;
 import com.example.sleeping.data.presentation.dto.AccMeasurement;
 import com.example.sleeping.data.presentation.dto.PpgMeasurement;
 import com.example.sleeping.global.exception.CustomException;
@@ -19,7 +21,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -50,6 +54,7 @@ public class SensorDataService {
 
     private InfluxDBClient client;
     private WriteApiBlocking writeApi;
+    private final DataCountRepository dataCountRepository;
 
     private final Path baseDir = Paths.get("/app/uploads");
 
@@ -284,5 +289,43 @@ public class SensorDataService {
             throw CustomException.of(DataErrorCode.NOT_FOUND);
         }
         return new UrlResource(file.toUri());
+    }
+
+    @Transactional
+    public void dataCounting() {
+        File directory = baseDir.toFile();
+        Long count = countFiles(directory);
+
+        if(!dataCountRepository.existsById(1L)) {
+            DataCount dataCount = DataCount.from(count);
+            dataCountRepository.save(dataCount);
+            return;
+        }
+
+        DataCount dataCount = dataCountRepository.findById(1L).orElseThrow();
+        dataCount.updateCount(count);
+    }
+
+    private Long countFiles(File dir) {
+        Long count = 0L;
+        File[] files = dir.listFiles();
+
+        if (files == null) return 0L;
+
+        for (File file : files) {
+            if (file.isFile()) {
+                count++;
+            } else if (file.isDirectory()) {
+                count += countFiles(file); // 재귀 호출로 하위 폴더 탐색
+            }
+        }
+
+        return count;
+    }
+
+    @Transactional(readOnly = true)
+    public Long getFileCount() {
+        return dataCountRepository.findById(1L)
+                .orElseThrow().getCount();
     }
 }

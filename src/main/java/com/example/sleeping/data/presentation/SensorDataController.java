@@ -78,4 +78,16 @@ public class SensorDataController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/count")
+    public ResponseEntity<?> countingFile() {
+        sensorDataService.dataCounting();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> getFileCount() {
+        Long count = sensorDataService.getFileCount();
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
 }
