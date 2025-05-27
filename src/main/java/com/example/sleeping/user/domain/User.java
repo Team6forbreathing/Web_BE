@@ -39,7 +39,17 @@ public class User {
 
     private LocalDate lastMeasured;
 
-    private User(String userId, String password, String name, String gender, int age, int height, int weight, boolean comp) {
+    private User(
+            String userId,
+            String password,
+            String name,
+            String gender,
+            int age,
+            int height,
+            int weight,
+            boolean comp,
+            LocalDate lastMeasured
+    ) {
         this.userId = userId;
         this.password = genPw(password);
         this.name = name;
@@ -49,6 +59,7 @@ public class User {
         this.weight = weight;
         this.comp = comp;
         this.role = Role.USER;
+        this.lastMeasured = lastMeasured;
     }
 
     public static User of(UserCommand userCommand) {
@@ -60,7 +71,8 @@ public class User {
                 userCommand.userAge(),
                 userCommand.userHeight(),
                 userCommand.userWeight(),
-                userCommand.userComp()
+                userCommand.userComp(),
+                LocalDate.of(1991, 1, 1)
         );
     }
 
@@ -79,7 +91,6 @@ public class User {
         this.height = userRequest.userHeight();
         this.weight = userRequest.userWeight();
         this.comp = userRequest.userComp();
-        this.lastMeasured = LocalDate.of(1999, 1, 1);
     }
 
     public void updatePw(String password) {
