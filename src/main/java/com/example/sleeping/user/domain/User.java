@@ -95,6 +95,6 @@ public class User {
     }
 
     public void updateMeasureInfo(LocalDate lastMeasured) {
-        this.lastMeasured = lastMeasured;
+        this.lastMeasured = this.lastMeasured.isBefore(lastMeasured) ? lastMeasured : this.lastMeasured;
     }
 }
