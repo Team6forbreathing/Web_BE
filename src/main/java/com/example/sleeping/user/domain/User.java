@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,6 +36,8 @@ public class User {
     private boolean comp;
 
     private Role role;
+
+    private LocalDate lastMeasured;
 
     private User(String userId, String password, String name, String gender, int age, int height, int weight, boolean comp) {
         this.userId = userId;
@@ -88,5 +92,9 @@ public class User {
         }
 
         this.role = Role.USER;
+    }
+
+    public void updateMeasureInfo(LocalDate lastMeasured) {
+        this.lastMeasured = lastMeasured;
     }
 }

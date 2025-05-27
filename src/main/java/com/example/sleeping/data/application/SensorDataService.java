@@ -17,6 +17,7 @@ import com.influxdb.query.FluxTable;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.util.Pair;
@@ -262,25 +263,28 @@ public class SensorDataService {
 
     public List<List<String>> readDataFileNameList(
             LocalDate startDate, LocalDate endDate, String userId
-    ) throws IOException {
+    ) {
         List<List<String>> result = new ArrayList<>();
         LocalDate date = startDate;
         while(endDate.isAfter(date) || endDate.isEqual(date)) {
-            Path dir = baseDir.resolve(date.toString());
-            Path userDir = dir.resolve(userId);
-
-            try (Stream<Path> files = Files.list(userDir)) {
-                result.add(files.map(Path::getFileName)
-                        .map(Path::toString)
-                        .collect(Collectors.toList()));
-            } catch (NoSuchFileException e) {
-                result.add(Collections.EMPTY_LIST);
-            }
-
+            result.add(findFileByUserIdAndDate(userId, date));
             date = date.plusDays(1);
         }
 
         return result;
+    }
+
+    public List<String> findFileByUserIdAndDate(String userId, LocalDate date) {
+        Path dir = baseDir.resolve(date.toString());
+        Path userDir = dir.resolve(userId);
+
+        try (Stream<Path> files = Files.list(userDir)) {
+            return files.map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return Collections.EMPTY_LIST;
+        }
     }
 
     public Resource getFileForDownload(LocalDate date, String userId, String filename) throws IOException {
