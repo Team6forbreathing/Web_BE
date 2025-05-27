@@ -79,6 +79,7 @@ public class User {
         this.height = userRequest.userHeight();
         this.weight = userRequest.userWeight();
         this.comp = userRequest.userComp();
+        this.lastMeasured = LocalDate.of(1999, 1, 1);
     }
 
     public void updatePw(String password) {
