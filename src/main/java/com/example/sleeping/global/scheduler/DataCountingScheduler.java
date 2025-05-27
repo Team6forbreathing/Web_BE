@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DataCountingScheduler {
-    private SensorDataService sensorDataService;
+    private final SensorDataService sensorDataService;
 
     @Scheduled(cron = "0 0 10 * * *")
     public void scheduledWork() {

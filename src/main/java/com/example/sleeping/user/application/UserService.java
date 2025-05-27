@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -74,5 +76,23 @@ public class UserService {
         User user = userRepository.findTopByOrderByIdDesc()
                 .orElseThrow(() -> CustomException.of(UserErrorCode.NOT_FOUND));
         return user.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public LocalDate getLastMeasuredDate(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(
+                () -> CustomException.of(UserErrorCode.NOT_FOUND)
+        );
+
+        return user.getLastMeasured();
+    }
+
+    @Transactional
+    public void updateMeasuredDate(LocalDate date, String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(
+                () -> CustomException.of(UserErrorCode.NOT_FOUND)
+        );
+
+        user.updateMeasureInfo(date);
     }
 }

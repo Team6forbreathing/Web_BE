@@ -1,6 +1,7 @@
 package com.example.sleeping.data.presentation;
 
 import com.example.sleeping.data.application.AsyncQueueService;
+import com.example.sleeping.data.application.SensorDataFacade;
 import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.data.application.dto.DataRequest;
 import com.example.sleeping.data.presentation.dto.SensorData;
@@ -27,6 +28,7 @@ import java.util.List;
 public class SensorDataController {
     private final AsyncQueueService asyncQueueService;
     private final SensorDataService sensorDataService;
+    private final SensorDataFacade sensorDataFacade;
 
     @PostMapping
     public ResponseEntity<?> createSensorData(
@@ -74,7 +76,7 @@ public class SensorDataController {
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @LoginUser String userId
     ) throws IOException {
-        sensorDataService.generateFilesForDate(date, userId);
+        sensorDataFacade.filingSensorData(date, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -89,5 +91,13 @@ public class SensorDataController {
     public ResponseEntity<?> getFileCount() {
         Long count = sensorDataService.getFileCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentMeasureData(
+            @LoginUser String userId
+    ) {
+        List<String> fileList = sensorDataFacade.getRecentData(userId);
+        return new ResponseEntity<>(fileList, HttpStatus.OK);
     }
 }
