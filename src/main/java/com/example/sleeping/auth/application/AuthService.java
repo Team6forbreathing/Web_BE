@@ -47,6 +47,6 @@ public class AuthService {
             throw CustomException.of(AuthErrorCode.WRONG_PW);
         }
 
-        return user.getName();
+        return user.getRole().name();
     }
 }

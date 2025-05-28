@@ -48,14 +48,14 @@ public class AuthController {
             @RequestBody String data
     ) throws JsonProcessingException{
         UserRequest userRequest = snakeMapper.readValue(data, UserRequest.class);
-        String userName = authService.login(userRequest);
+        String role = authService.login(userRequest);
 
         Token token = jwtTokenProvider.generateToken(userRequest.userId());
 
-        HttpHeaders headers = CookieUtil.cookieSet(token, userName);
+        HttpHeaders headers = CookieUtil.cookieSet(token, role);
 
         return new ResponseEntity<>(
-                Message.of("Login Success!"),
+                Message.of(role),
                 headers,
                 HttpStatus.OK
         );
