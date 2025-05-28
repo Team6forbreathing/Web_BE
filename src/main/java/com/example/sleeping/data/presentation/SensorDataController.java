@@ -49,7 +49,7 @@ public class SensorDataController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @LoginUser String userId
-    ) throws IOException {
+    ) {
         List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
@@ -69,22 +69,6 @@ public class SensorDataController {
         headers.setContentDispositionFormData("attachment", filename);
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/set")
-    public ResponseEntity<?> makefile(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @LoginUser String userId
-    ) throws IOException {
-        sensorDataFacade.filingSensorData(date, userId);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PostMapping("/count")
-    public ResponseEntity<?> countingFile() {
-        sensorDataService.dataCounting();
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/count")

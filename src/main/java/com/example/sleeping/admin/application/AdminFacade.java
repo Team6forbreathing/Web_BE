@@ -5,6 +5,9 @@ import com.example.sleeping.global.scheduler.DataFileScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 public class AdminFacade {
@@ -24,6 +27,19 @@ public class AdminFacade {
         dataFileScheduler.turnOn();
     }
 
+    public void launchDataFileScheduler() throws IOException {
+        boolean state = dataFileScheduler.getStatus();
+
+        dataFileScheduler.turnOn();
+        for (int i = 0; i < 7; i++) {
+            dataFileScheduler.scheduledWork(LocalDate.now().plusDays(i));
+        }
+
+        if(!state) {
+            dataCountingScheduler.turnOff();
+        }
+    }
+
     public boolean getDataCountingSchedulerStatus() {
         return dataCountingScheduler.getStatus();
     }
@@ -35,5 +51,16 @@ public class AdminFacade {
         }
 
         dataCountingScheduler.turnOn();
+    }
+
+    public void launchDataCountingScheduler() {
+        boolean state = dataCountingScheduler.getStatus();
+
+        dataCountingScheduler.turnOn();
+        dataCountingScheduler.scheduledWork();
+
+        if(!state) {
+            dataCountingScheduler.turnOff();
+        }
     }
 }

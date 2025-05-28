@@ -2,9 +2,13 @@ package com.example.sleeping.global.scheduler;
 
 import com.example.sleeping.data.application.SensorDataService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DataCountingScheduler {
@@ -18,6 +22,8 @@ public class DataCountingScheduler {
         }
 
         sensorDataService.dataCounting();
+
+        log.info("데이터 집계 스케쥴링 동작 완료 : " + LocalDateTime.now());
     }
 
     public void turnOn() {

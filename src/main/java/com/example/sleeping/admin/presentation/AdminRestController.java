@@ -4,13 +4,18 @@ import com.example.sleeping.admin.application.AdminFacade;
 import com.example.sleeping.admin.application.AdminService;
 import com.example.sleeping.admin.presentation.dto.UserResponse;
 import com.example.sleeping.global.annotation.AdminUser;
+import com.example.sleeping.global.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -67,6 +72,15 @@ public class AdminRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/scheduler/file/launch")
+    public ResponseEntity<?> makeWeeklyFile(
+            @AdminUser String userId
+    ) throws IOException {
+        adminFacade.launchDataFileScheduler();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("scheduler/count")
     public ResponseEntity<?> getCountSchedulerStatus(
             @AdminUser String admin
@@ -81,6 +95,15 @@ public class AdminRestController {
             @AdminUser String admin
     ) {
         adminFacade.changeDataCountingScheduler();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/scheduler/count/launch")
+    public ResponseEntity<?> countingFile(
+            @AdminUser String admin
+    ) {
+        adminFacade.launchDataCountingScheduler();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
