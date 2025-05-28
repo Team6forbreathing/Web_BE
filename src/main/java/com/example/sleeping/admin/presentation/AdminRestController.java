@@ -1,5 +1,6 @@
 package com.example.sleeping.admin.presentation;
 
+import com.example.sleeping.admin.application.AdminFacade;
 import com.example.sleeping.admin.application.AdminService;
 import com.example.sleeping.admin.presentation.dto.UserResponse;
 import com.example.sleeping.global.annotation.AdminUser;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminRestController {
     private final AdminService adminService;
+    private final AdminFacade adminFacade;
 
     @GetMapping
     public ResponseEntity<?> getUserInfos(
@@ -45,5 +47,41 @@ public class AdminRestController {
         adminService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/scheduler/file")
+    public ResponseEntity<?> getFileSchedulerStatus(
+            @AdminUser String admin
+    ) {
+        boolean status = adminFacade.getDataFileSchedulerStatus();
+
+        return new ResponseEntity<>(status, HttpStatus.OK);
+    }
+
+    @PostMapping("/scheduler/file")
+    public ResponseEntity<?> changeFileSchedulerStatus(
+            @AdminUser String admin
+    ) {
+        adminFacade.changeDataFileScheduler();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("scheduler/count")
+    public ResponseEntity<?> getCountSchedulerStatus(
+            @AdminUser String admin
+    ) {
+        boolean status = adminFacade.getDataCountingSchedulerStatus();
+
+        return new ResponseEntity<>(status, HttpStatus.OK);
+    }
+
+    @PostMapping("/scheduler/count")
+    public ResponseEntity<?> changeCountSchedulerStatus(
+            @AdminUser String admin
+    ) {
+        adminFacade.changeDataCountingScheduler();
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

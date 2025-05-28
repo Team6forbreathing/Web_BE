@@ -8,10 +8,27 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DataCountingScheduler {
+    private volatile boolean active = true;
     private final SensorDataService sensorDataService;
 
     @Scheduled(cron = "0 0 10 * * *")
     public void scheduledWork() {
+        if(!active) {
+            return;
+        }
+
         sensorDataService.dataCounting();
+    }
+
+    public void turnOn() {
+        this.active = true;
+    }
+
+    public void turnOff() {
+        this.active = false;
+    }
+
+    public boolean getStatus() {
+        return this.active;
     }
 }

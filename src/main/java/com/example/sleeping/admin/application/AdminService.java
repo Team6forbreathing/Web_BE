@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -19,6 +21,13 @@ public class AdminService {
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUserInfos(Pageable pageable) {
         return userRepository.findAll(pageable).map(UserResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllUserInfosForScheduling() {
+        return userRepository.findAll().stream().
+                map(UserResponse::of).
+                toList();
     }
 
     @Transactional
