@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>스케줄러 관리 페이지</title>
+    <link rel="stylesheet" href="/css/scheduler.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/schduler.js"></script>
+</head>
+<body>
+<div class="header" id="header">
+    <a href="/admin" class="admin-link">Apnea Guard</a>
+</div>
+
+<h1>스케줄러 관리자 페이지</h1>
+
+<div class="container">
+    <!-- dataCountingScheduler -->
+    <div class="card">
+        <div class="icon">🧮</div>
+        <div class="title">파일 개수 동기화</div>
+        <div class="status" id="counting-status">상태: </div>
+        <button class="btn btn-toggle" onclick="toggleStatus('counting')">ON/OFF</button>
+        <button class="btn btn-run" onclick="runScheduler('counting')">스케줄 실행</button>
+    </div>
+
+    <!-- dataFileScheduler -->
+    <div class="card">
+        <div class="icon">📂</div>
+        <div class="title">DB / 서버 파일시스템 동기화 </div>
+        <div class="status" id="file-status">상태: </div>
+        <button class="btn btn-toggle" onclick="toggleStatus('file')">ON/OFF</button>
+        <button class="btn btn-run" onclick="runScheduler('file')">스케줄 실행</button>
+    </div>
+</div>
+
+</body>
+</html>

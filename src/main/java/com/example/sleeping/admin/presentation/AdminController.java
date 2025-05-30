@@ -15,10 +15,24 @@ public class AdminController {
         return "login.html";
     }
 
-    @GetMapping
-    public String admin(
+    @GetMapping("/userPage")
+    public String user(
             @AdminUser String userId
     ) {
-        return "admin.html";
+        return "user.html";
+    }
+
+    @GetMapping
+    public String main(
+            @AdminUser String userId
+    ) {
+        return "main.html";
+    }
+
+    @GetMapping("/schedulerPage")
+    public String schedule(
+            @AdminUser String userId
+    ) {
+        return "scheduler.html";
     }
 }

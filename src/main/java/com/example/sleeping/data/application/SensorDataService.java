@@ -17,17 +17,16 @@ import com.influxdb.query.FluxTable;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -331,5 +330,21 @@ public class SensorDataService {
     public Long getFileCount() {
         return dataCountRepository.findById(1L)
                 .orElseThrow().getCount();
+    }
+
+    public void uploadFile(LocalDate date, String userId, MultipartFile multipartFile) throws IOException {
+        Path dateDir = baseDir.toAbsolutePath().resolve(date.toString());
+        Files.createDirectories(dateDir);
+
+        Path userDir = dateDir.resolve(userId);
+        Files.createDirectories(userDir);
+
+        String originalFileName = multipartFile.getOriginalFilename();
+
+        // 저장 경로 설정
+        Path filePath = userDir.resolve(originalFileName);
+
+        // 파일 저장
+        multipartFile.transferTo(filePath.toFile());
     }
 }

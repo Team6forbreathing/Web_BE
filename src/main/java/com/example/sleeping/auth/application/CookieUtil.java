@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class CookieUtil {
-    public static HttpHeaders cookieSet(Token token, String userName) {
+    public static HttpHeaders cookieSet(Token token, String role) {
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", token.accessToken())
                 .httpOnly(false)
                 .sameSite("Strict")
@@ -21,9 +21,9 @@ public class CookieUtil {
                 .path("/")
                 .build();
 
-        String encodedUserName = Base64.getEncoder().encodeToString(userName.getBytes(StandardCharsets.UTF_8));
-        ResponseCookie userNameCookie = ResponseCookie.from("user_name", encodedUserName)
-                .httpOnly(false)  // HttpOnly가 아니므로 JavaScript에서 접근 가능
+        String encodedRole = Base64.getEncoder().encodeToString(role.getBytes(StandardCharsets.UTF_8));
+        ResponseCookie userRoleCookie = ResponseCookie.from("user_name", encodedRole)
+                .httpOnly(false)
                 .sameSite("Strict")
                 .path("/")
                 .build();
@@ -31,7 +31,7 @@ public class CookieUtil {
         HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.add(org.springframework.http.HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         headers.add(org.springframework.http.HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        headers.add(org.springframework.http.HttpHeaders.SET_COOKIE, userNameCookie.toString());
+        headers.add(org.springframework.http.HttpHeaders.SET_COOKIE, userRoleCookie.toString());
 
         return headers;
     }

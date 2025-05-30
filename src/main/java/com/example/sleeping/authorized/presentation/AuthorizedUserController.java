@@ -1,64 +1,60 @@
-package com.example.sleeping.data.presentation;
+package com.example.sleeping.authorized.presentation;
 
-import com.example.sleeping.data.application.AsyncQueueService;
-import com.example.sleeping.data.application.SensorDataFacade;
+import com.example.sleeping.admin.presentation.dto.UserResponse;
+import com.example.sleeping.authorized.application.AuthorizedUserService;
 import com.example.sleeping.data.application.SensorDataService;
-import com.example.sleeping.data.application.dto.DataRequest;
-import com.example.sleeping.data.presentation.dto.SensorData;
-import com.example.sleeping.global.annotation.LoginUser;
-import com.example.sleeping.global.dto.Message;
+import com.example.sleeping.global.annotation.AuthUser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-@Slf4j
 @RestController
+@RequestMapping("/authUser")
 @RequiredArgsConstructor
-@RequestMapping("/sensor")
-public class SensorDataController {
-    private final AsyncQueueService asyncQueueService;
+public class AuthorizedUserController {
+    private final AuthorizedUserService authorizedUserService;
     private final SensorDataService sensorDataService;
-    private final SensorDataFacade sensorDataFacade;
 
-    @PostMapping
-    public ResponseEntity<?> createSensorData(
-            @RequestBody SensorData sensorData,
-            @LoginUser String userId
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserInfos(
+            @AuthUser String userId,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
-        DataRequest dataRequest = DataRequest.from(userId, sensorData);
-        asyncQueueService.addRequestToQueue(dataRequest);
+        Page<UserResponse> userResponses = authorizedUserService.getAllUserInfos(pageable);
 
-        return new ResponseEntity<>(
-                Message.of("sending successfully"),
-                HttpStatus.CREATED
-        );
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @LoginUser String userId
+            @AuthUser String auth,
+            @PathVariable String userId
     ) {
         List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
 
-    @GetMapping("/download")
+    @GetMapping("/user/{userId}/download")
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("file") String filename,
-            @LoginUser String userId
+            @AuthUser String auth,
+            @PathVariable String userId
     ) throws IOException {
         Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
 
@@ -71,17 +67,15 @@ public class SensorDataController {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<?> getFileCount() {
-        Long count = sensorDataService.getFileCount();
-        return new ResponseEntity<>(count, HttpStatus.OK);
-    }
+    @PostMapping("/user/{userId}/upload")
+    public ResponseEntity<?> uploadFile(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestPart("file") MultipartFile multipartFile,
+            @AuthUser String auth,
+            @PathVariable String userId
+    ) throws IOException {
+        sensorDataService.uploadFile(date, userId, multipartFile);
 
-    @GetMapping("/recent")
-    public ResponseEntity<?> getRecentMeasureData(
-            @LoginUser String userId
-    ) {
-        List<String> fileList = sensorDataFacade.getRecentData(userId);
-        return new ResponseEntity<>(fileList, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
