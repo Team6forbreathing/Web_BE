@@ -55,7 +55,7 @@ function changeCountStatus() {
         url: "/api/admin/scheduler/count",
         success : function(res){
             getStatus();
-            if(statuses.counting) {
+            if(!statuses.counting) {
                 alert("파일 개수 동기화 스케줄링을 시작했습니다.")
             }
             else {
@@ -75,7 +75,7 @@ function changeFileStatus() {
         url: "/api/admin/scheduler/file",
         success : function(res){
             getStatus();
-            if(statuses.file) {
+            if(!statuses.file) {
                 alert("파일 시스템 동기화 스케줄링을 시작했습니다.")
             }
             else {
