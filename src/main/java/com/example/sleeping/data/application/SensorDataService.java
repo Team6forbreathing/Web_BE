@@ -193,12 +193,12 @@ public class SensorDataService {
         return result;
     }
 
-    public void generateFilesForDate(LocalDate date, String userId) throws IOException {
+    public boolean generateFilesForDate(LocalDate date, String userId) throws IOException {
         List<AccMeasurement> accData = queryByOneUnitAcc(date, userId);
         List<PpgMeasurement> ppgData = queryByOneUnitPpg(date, userId);
 
         if(accData.isEmpty() && ppgData.isEmpty()) {
-            return;
+            return false;
         }
 
         if(!accData.isEmpty()) {
@@ -237,6 +237,8 @@ public class SensorDataService {
                 makeFile(date, "ppgData", userId, current, count);
             }
         }
+
+        return true;
     }
 
     private void makeFile(
