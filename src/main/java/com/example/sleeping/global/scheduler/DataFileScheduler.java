@@ -35,8 +35,9 @@ public class DataFileScheduler {
                 .toList();
 
         for (String userId : userIds) {
-            sensorDataService.generateFilesForDate(LocalDate.now().minusDays(1), userId);
-            userService.updateMeasuredDate(LocalDate.now(), userId);
+            if(sensorDataService.generateFilesForDate(LocalDate.now().minusDays(1), userId)) {
+                userService.updateMeasuredDate(LocalDate.now().minusDays(1), userId);
+            }
         }
 
         log.info("데이터 파일화 스케쥴링 동작 완료 : " + LocalDateTime.now());
@@ -53,7 +54,9 @@ public class DataFileScheduler {
                 .toList();
 
         for (String userId : userIds) {
-            sensorDataService.generateFilesForDate(target, userId);
+            if(sensorDataService.generateFilesForDate(target, userId)) {
+                userService.updateMeasuredDate(target, userId);
+            }
         }
 
         log.info("데이터 파일화 스케쥴링 동작 완료 : " + LocalDateTime.now());
