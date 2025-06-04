@@ -18,10 +18,4 @@ public class SensorDataFacade {
         LocalDate date = userService.getLastMeasuredDate(userId);
         return sensorDataService.findFileByUserIdAndDate(userId, date);
     }
-
-    public void filingSensorData(LocalDate date, String userId) throws IOException {
-        sensorDataService.generateFilesForDate(date, userId);
-
-        userService.updateMeasuredDate(date, userId);
-    }
 }
