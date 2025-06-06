@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
 public enum DataErrorCode implements CustomErrorCode {
-    NOT_FOUND(HttpStatus.NOT_FOUND, "D001", "Data not found");
+    NOT_FOUND(HttpStatus.NOT_FOUND, "D001", "Data not found"),
+    FLASK_SERVER_PROBLEM(HttpStatus.SERVICE_UNAVAILABLE, "D002", "Flask server problem");
 
     private final HttpStatus httpStatus;
     private final String code;
