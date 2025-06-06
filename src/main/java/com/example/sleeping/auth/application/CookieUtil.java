@@ -22,7 +22,7 @@ public class CookieUtil {
                 .build();
 
         String encodedRole = Base64.getEncoder().encodeToString(role.getBytes(StandardCharsets.UTF_8));
-        ResponseCookie userRoleCookie = ResponseCookie.from("user_name", encodedRole)
+        ResponseCookie userRoleCookie = ResponseCookie.from("user_role", encodedRole)
                 .httpOnly(false)
                 .sameSite("Strict")
                 .path("/")
