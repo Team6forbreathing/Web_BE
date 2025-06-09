@@ -1,7 +1,7 @@
 package com.example.sleeping.global.resolver;
 
 import com.example.sleeping.auth.application.JwtTokenProvider;
-import com.example.sleeping.global.annotation.AdminUser;
+import com.example.sleeping.global.annotation.AuthUser;
 import com.example.sleeping.global.exception.CustomException;
 import com.example.sleeping.global.exception.errorCode.UserErrorCode;
 import jakarta.servlet.http.Cookie;
@@ -21,7 +21,7 @@ public class AuthorizedUserArgumentResolver implements HandlerMethodArgumentReso
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AdminUser.class);
+        return parameter.hasParameterAnnotation(AuthUser.class);
     }
 
     @Override
