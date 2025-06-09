@@ -16,7 +16,6 @@ public class CustomExceptionHandler {
             HttpServletRequest request,
             CustomException exception
     ) {
-        log.error(exception.getErrorCode() + " : " + exception.getMessage(), exception);
         return new ResponseEntity<>(
                 Message.of(exception.getErrorMessage()),
                 exception.getHttpStatus()

@@ -20,13 +20,13 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUserInfos(Pageable pageable) {
-        return userRepository.findAll(pageable).map(UserResponse::of);
+        return userRepository.findAll(pageable).map(UserResponse::from);
     }
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUserInfosForScheduling() {
         return userRepository.findAll().stream().
-                map(UserResponse::of).
+                map(UserResponse::from).
                 toList();
     }
 

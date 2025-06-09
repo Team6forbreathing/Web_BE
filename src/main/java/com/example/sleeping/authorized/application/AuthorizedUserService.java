@@ -15,6 +15,6 @@ public class AuthorizedUserService {
 
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUserInfos(Pageable pageable) {
-        return userRepository.findAll(pageable).map(UserResponse::of);
+        return userRepository.findAll(pageable).map(UserResponse::from);
     }
 }

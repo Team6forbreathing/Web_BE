@@ -8,7 +8,7 @@ public record UserResponse(
         String userName,
         Boolean isAuthorized
 ) {
-    public static UserResponse of(User user) {
+    public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getUserId(),

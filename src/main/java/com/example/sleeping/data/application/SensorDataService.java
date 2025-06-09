@@ -6,6 +6,7 @@ import com.example.sleeping.data.presentation.dto.AccMeasurement;
 import com.example.sleeping.data.presentation.dto.PpgMeasurement;
 import com.example.sleeping.global.exception.CustomException;
 import com.example.sleeping.global.exception.errorCode.DataErrorCode;
+import com.example.sleeping.wfdb.FlaskClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -55,6 +56,7 @@ public class SensorDataService {
     private InfluxDBClient client;
     private WriteApiBlocking writeApi;
     private final DataCountRepository dataCountRepository;
+    private final FlaskClient flaskClient;
 
     private final Path baseDir = Paths.get("/app/uploads");
 
@@ -260,6 +262,8 @@ public class SensorDataService {
         Path csvFile = userDir.resolve(fileName + ".csv");
         CsvSchema schema = csvMapper.schemaFor(data.get(0).getClass()).withHeader();  // 첫 줄에 헤더 포함
         csvMapper.writer(schema).writeValue(csvFile.toFile(), data);
+        
+        translateFileForm(csvFile, userDir.resolve(fileName + ".zip"));
     }
 
     public List<List<String>> readDataFileNameList(
@@ -348,5 +352,9 @@ public class SensorDataService {
 
         // 파일 저장
         multipartFile.transferTo(filePath.toFile());
+    }
+    
+    public void translateFileForm(Path sendFilePath, Path returnFilePath) {
+        flaskClient.translateToWFDB(sendFilePath, returnFilePath.toAbsolutePath());
     }
 }
