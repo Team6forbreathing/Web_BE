@@ -58,6 +58,7 @@ jobs:
           INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
           INFLUX_BUCKET: ${{ secrets.INFLUX_BUCKET }}
           INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+          FLASK_SERVER_URL: ${{ secrets.FLASK_SERVER_URL }}
         run: |
           chmod +x ./gradlew
           ./gradlew clean build -x test --no-daemon
@@ -152,6 +153,7 @@ jobs:
               -e INFLUX_ORG=${{ secrets.INFLUX_ORG }} \
               -e INFLUX_BUCKET=${{ secrets.INFLUX_BUCKET }} \
               -e INFLUX_TOKEN=${{ secrets.INFLUX_TOKEN }} \
+              -e FLASK_SERVER_URL=${{ secrets.FLASK_SERVER_URL }} \
               parkminjin/spring_app:latest
           '
           
