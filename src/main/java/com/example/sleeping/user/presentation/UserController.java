@@ -21,7 +21,8 @@ public class UserController {
     private final UserService userService;
     ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-
+    
+    // 자신의 유저 데이터 조회
     @GetMapping("/info")
     public ResponseEntity<?> readMyUserData(
             @LoginUser String userId
@@ -29,7 +30,8 @@ public class UserController {
         UserResponse userResponse = userService.readUserData(userId);
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
-
+    
+    // 자신의 유저 데이터 업데이트
     @PatchMapping("/update")
     public ResponseEntity<?> updateMyUserData(
             @LoginUser String userId,
@@ -43,7 +45,8 @@ public class UserController {
                 HttpStatus.OK
         );
     }
-
+    
+    // 자신의 비밀번호 업데이트
     @PatchMapping("/password")
     public ResponseEntity<?> updateMyUserPassword(
             @LoginUser String userId,
@@ -57,7 +60,8 @@ public class UserController {
                 HttpStatus.OK
         );
     }
-
+    
+    // 유저 탈퇴
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteMyUserData(
             @LoginUser String userId
@@ -69,7 +73,8 @@ public class UserController {
                 HttpStatus.NO_CONTENT
         );
     }
-
+    
+    // 비밀번호 검증
     @PostMapping("/pw_verify")
     public ResponseEntity<?> passwordVerifying(
             @LoginUser String userId,
@@ -83,7 +88,8 @@ public class UserController {
                 HttpStatus.OK
         );
     }
-
+    
+    // 유저 가입수 조회
     @GetMapping("/count")
     public ResponseEntity<?> userCount() {
         long count = userService.countUserNumber();

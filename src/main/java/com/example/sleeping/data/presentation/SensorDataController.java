@@ -30,6 +30,7 @@ public class SensorDataController {
     private final SensorDataService sensorDataService;
     private final SensorDataFacade sensorDataFacade;
 
+    // 센서 데이터 받아서 influxDB에 저장
     @PostMapping
     public ResponseEntity<?> createSensorData(
             @RequestBody SensorData sensorData,
@@ -44,6 +45,7 @@ public class SensorDataController {
         );
     }
 
+    // 특정 기간 동안의 센서 데이터 리스트 조회
     @GetMapping
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -53,7 +55,8 @@ public class SensorDataController {
         List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
-
+    
+    // 특정 날짜, 특정 이름의 파일 다운로드
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -70,13 +73,15 @@ public class SensorDataController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
-
+    
+    // 파일의 개수 조회
     @GetMapping("/count")
     public ResponseEntity<?> getFileCount() {
         Long count = sensorDataService.getFileCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
-
+    
+    // 최근 측정한 데이터 조회
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentMeasureData(
             @LoginUser String userId

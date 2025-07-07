@@ -18,18 +18,22 @@ import java.util.List;
 public class AdminService {
     private final UserRepository userRepository;
 
+    // 모든 유저의 정보를 조회 (관리자 페이지에서 사용)
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUserInfos(Pageable pageable) {
-        return userRepository.findAll(pageable).map(UserResponse::from);
+        return userRepository.findAll(pageable)
+                   .map(UserResponse::from);
     }
-
+    
+    // 모든 유저의 정보를 조회 (스케줄러에서 사용 )
     @Transactional(readOnly = true)
-    public List<UserResponse> getAllUserInfosForScheduling() {
-        return userRepository.findAll().stream().
-                map(UserResponse::from).
-                toList();
+    public List<UserResponse> getAllUserInfos() {
+        return userRepository.findAll().stream()
+                   .map(UserResponse::from)
+                   .toList();
     }
-
+    
+    // 사용자 인가
     @Transactional
     public void granting(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
@@ -38,7 +42,8 @@ public class AdminService {
 
         user.grant();
     }
-
+    
+    // 사용자 삭제
     @Transactional
     public void delete(Long userId) {
         userRepository.deleteById(userId);

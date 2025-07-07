@@ -19,7 +19,8 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
+    
+    // 유저 정보 읽기
     @Transactional(readOnly = true)
     public UserResponse readUserData(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(
@@ -28,7 +29,8 @@ public class UserService {
 
         return UserResponse.of(user);
     }
-
+    
+    // 유저 정보 업데이트 하기
     @Transactional
     public void updateUserData(String userId, UserRequest userRequest) {
         User user = userRepository.findByUserId(userId).orElseThrow(
@@ -37,7 +39,8 @@ public class UserService {
 
         user.update(userRequest);
     }
-
+    
+    // 유저 비밀번호 업데이트 하기
     @Transactional
     public void updateUserPassword(String userId, PassChangeRequest passChangeRequest) {
         if(passChangeRequest.currentPassword() == null || passChangeRequest.newPassword() == null) {
@@ -54,12 +57,14 @@ public class UserService {
 
         user.updatePw(passChangeRequest.newPassword());
     }
-
+    
+    // 유저 정보 삭제하기
     @Transactional
     public void deleteUserData(String userId) {
         userRepository.deleteByUserId(userId);
     }
-
+    
+    // 비밀번호 검증
     @Transactional(readOnly = true)
     public void verifyPassword(String userId, String password) {
         User user = userRepository.findByUserId(userId).orElseThrow(
@@ -70,14 +75,16 @@ public class UserService {
             throw CustomException.of(UserErrorCode.WRONG_PASSWORD);
         }
     }
-
+    
+    // 유저 가입수 조회
     @Transactional(readOnly = true)
     public long countUserNumber() {
         User user = userRepository.findTopByOrderByIdDesc()
                 .orElseThrow(() -> CustomException.of(UserErrorCode.NOT_FOUND));
         return user.getId();
     }
-
+    
+    // 마지막으로 측정한 데이터 조회
     @Transactional(readOnly = true)
     public LocalDate getLastMeasuredDate(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(
@@ -86,7 +93,8 @@ public class UserService {
 
         return user.getLastMeasured();
     }
-
+    
+    // 마지막으로 측정한 데이터 업데이트
     @Transactional
     public void updateMeasuredDate(LocalDate date, String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(
