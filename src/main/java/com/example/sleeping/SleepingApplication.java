@@ -11,5 +11,4 @@ public class SleepingApplication {
     public static void main(String[] args) {
         SpringApplication.run(SleepingApplication.class, args);
     }
-
 }

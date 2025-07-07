@@ -23,7 +23,8 @@ import java.time.LocalDate;
 public class AdminRestController {
     private final AdminService adminService;
     private final AdminFacade adminFacade;
-
+    
+    // 모든 유저 정보를 조회
     @GetMapping
     public ResponseEntity<?> getUserInfos(
             @AdminUser String userId,
@@ -33,7 +34,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
-
+    
+    // 유저 -> 인가 유저로 변경
     @PatchMapping("/{id}")
     public ResponseEntity<?> granting(
             @AdminUser String admin,
@@ -44,6 +46,7 @@ public class AdminRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 유저 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUSer(
             @AdminUser String admin,
@@ -53,7 +56,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    
+    // 파일화 스케줄러의 상태 조회
     @GetMapping("/scheduler/file")
     public ResponseEntity<?> getFileSchedulerStatus(
             @AdminUser String admin
@@ -62,7 +66,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
-
+    
+    // 파일화 스케줄러의 상태 변경 (on-off)
     @PostMapping("/scheduler/file")
     public ResponseEntity<?> changeFileSchedulerStatus(
             @AdminUser String admin
@@ -71,7 +76,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
+    // 파일화 스케줄러 강제 실행
     @PostMapping("/scheduler/file/launch")
     public ResponseEntity<?> makeWeeklyFile(
             @AdminUser String userId
@@ -80,7 +86,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
+    // 파일 개수 집계 스케줄러 상태 조회
     @GetMapping("scheduler/count")
     public ResponseEntity<?> getCountSchedulerStatus(
             @AdminUser String admin
@@ -89,7 +96,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
-
+    
+    // 파일 개수 집계 스케줄러 상태 변경
     @PostMapping("/scheduler/count")
     public ResponseEntity<?> changeCountSchedulerStatus(
             @AdminUser String admin
@@ -98,7 +106,8 @@ public class AdminRestController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
+    // 파일 개수 집계 스케줄러 강제 실행
     @PostMapping("/scheduler/count/launch")
     public ResponseEntity<?> countingFile(
             @AdminUser String admin

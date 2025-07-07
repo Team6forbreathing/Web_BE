@@ -29,7 +29,7 @@ public class DataFileScheduler {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfosForScheduling()
+        List<String> userIds = adminService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();
@@ -48,7 +48,7 @@ public class DataFileScheduler {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfosForScheduling()
+        List<String> userIds = adminService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();

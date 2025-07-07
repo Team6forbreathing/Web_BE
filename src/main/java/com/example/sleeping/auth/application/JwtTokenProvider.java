@@ -28,7 +28,13 @@ public class JwtTokenProvider {
     private long accessTokenExpired;
     @Value("${secret.refresh.expiry}")
     private long refreshTokenExpired;
+    
+    // 토큰 발행
+    public Token generateToken(String userId) {
+        return Token.of(makeAccessToken(userId), makeRefreshToken(userId));
+    }
 
+    // 액세스 토큰 발행
     private String makeAccessToken(String userId) {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(System.currentTimeMillis());
@@ -40,7 +46,8 @@ public class JwtTokenProvider {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
-
+    
+    // 리프레시 토큰 발행
     private String makeRefreshToken(String userId) {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(System.currentTimeMillis());
@@ -52,25 +59,8 @@ public class JwtTokenProvider {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
-
-    public Token generateToken(String userId) {
-        return Token.of(makeAccessToken(userId), makeRefreshToken(userId));
-    }
-
-    public String getClaimFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            return claims.get("userId", String.class);
-        } catch(Exception e){
-            return "null";
-        }
-    }
-
-    @Transactional(readOnly = true)
+    
+    // 토큰 내용 분석
     public String tokenParsing(String token) {
         if(isExpired(token)) {
             throw CustomException.of(AuthErrorCode.EXPIRED_TOKEN);
@@ -81,11 +71,25 @@ public class JwtTokenProvider {
         if(!userRepository.existsUserByUserId(userId)) {
             throw CustomException.of(AuthErrorCode.INVALID_TOKEN);
         }
-
-        System.out.println("userId = " + userId);
+        
         return userId;
     }
-
+    
+    // 토큰에서 userId를 추출
+    public String getClaimFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                                .build()
+                                .parseSignedClaims(token)
+                                .getPayload();
+            return claims.get("userId", String.class);
+        } catch(Exception e){
+            return "null";
+        }
+    }
+    
+    // 토큰 만료 여부 확인
     private boolean isExpired(String token) {
         try {
             Claims claims = Jwts.parser()

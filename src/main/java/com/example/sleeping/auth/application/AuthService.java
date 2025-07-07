@@ -17,13 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final UserRepository userRepository;
 
+    // 회원 가입
     @Transactional
     public void register(UserCommand userCommand) {
         if(userCommand.userId() == null || userCommand.userPw() == null || userCommand.userName() == null) {
             throw CustomException.of(AuthErrorCode.INVALID_DATA_FIELD);
-        }
-        if(containSpace(userCommand.userName())) {
-            throw CustomException.of(AuthErrorCode.USER_NAME_SPACE);
         }
         if(userRepository.existsUserByUserId(userCommand.userId())) {
             throw CustomException.of(AuthErrorCode.DUPLICATION);
@@ -32,11 +30,8 @@ public class AuthService {
         User user = User.of(userCommand);
         userRepository.save(user);
     }
-
-    private boolean containSpace(String userName) {
-        return userName.contains(" ");
-    }
-
+    
+    // 로그인
     @Transactional(readOnly = true)
     public String login(UserRequest userRequest) {
         User user = userRepository.findByUserId(userRequest.userId()).orElseThrow(
