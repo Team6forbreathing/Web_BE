@@ -101,7 +101,8 @@ public class SensorDataService {
 
         writeApi.writePoints(points);
     }
-
+    
+    // 특정 날짜를 기준으로 정오에서 다음 날 정오사이의 수면을 범위로 검색조건 생성
     private Pair<Instant, Instant> getTimeRange(LocalDate date) {
         ZoneId seoulZone = ZoneId.of("Asia/Seoul");
 
@@ -110,8 +111,9 @@ public class SensorDataService {
 
         return Pair.of(startZdt.toInstant(), endZdt.toInstant());
     }
-
-    public List<AccMeasurement> queryByOneUnitAcc(LocalDate date, String userId) {
+    
+    // 특정 날짜의 ACC 데이터 조회
+    private List<AccMeasurement> queryByOneUnitAcc(LocalDate date, String userId) {
         Pair<Instant, Instant> timeRange = getTimeRange(date);
         Instant start = timeRange.getFirst();
         Instant end = timeRange.getSecond();
@@ -149,8 +151,9 @@ public class SensorDataService {
         }
         return result;
     }
-
-    public List<PpgMeasurement> queryByOneUnitPpg(LocalDate date, String userId) {
+    
+    // 특정 날짜의 PPG 데이터 조회
+    private List<PpgMeasurement> queryByOneUnitPpg(LocalDate date, String userId) {
         Pair<Instant, Instant> timeRange = getTimeRange(date);
         Instant start = timeRange.getFirst();
         Instant end = timeRange.getSecond();
@@ -194,7 +197,8 @@ public class SensorDataService {
         }
         return result;
     }
-
+    
+    // 하루치 데이터를 읽고 파일화
     public boolean generateFilesForDate(LocalDate date, String userId) throws IOException {
         List<AccMeasurement> accData = queryByOneUnitAcc(date, userId);
         List<PpgMeasurement> ppgData = queryByOneUnitPpg(date, userId);
@@ -202,7 +206,8 @@ public class SensorDataService {
         if(accData.isEmpty() && ppgData.isEmpty()) {
             return false;
         }
-
+        
+        // ACC 데이터가 존재하는 경우 -> dataId에 따라 수면 단위로 나누어 파일화
         if(!accData.isEmpty()) {
             List<AccMeasurement> current = new ArrayList<>();
             int count = 0;
@@ -210,13 +215,15 @@ public class SensorDataService {
             Iterator<AccMeasurement> iterator = accData.iterator();
             while (iterator.hasNext()) {
                 AccMeasurement m = iterator.next();
+                // 새로운 수면 단위가 시작된 경우
                 if (m.id() == 1 && !current.isEmpty()) {
                     makeFile(date, "accData", userId, current, count++);
                     current = new ArrayList<>();
                 }
                 current.add(m);
             }
-
+            
+            // 끝까지 다 조회한 경우
             if (!current.isEmpty()) {
                 makeFile(date, "accData", userId, current, count);
             }
@@ -228,13 +235,15 @@ public class SensorDataService {
             Iterator<PpgMeasurement> iterator = ppgData.iterator();
             while (iterator.hasNext()) {
                 PpgMeasurement m = iterator.next();
+                // 새로운 수면 단위가 시작된 경우
                 if (m.id() == 1 && !current.isEmpty()) {
                     makeFile(date, "ppgData", userId, current, count++);
                     current = new ArrayList<>();
                 }
                 current.add(m);
             }
-
+            
+            // 끝까지 다 조회한 경우
             if (!current.isEmpty()) {
                 makeFile(date, "ppgData", userId, current, count);
             }
@@ -242,30 +251,38 @@ public class SensorDataService {
 
         return true;
     }
-
+    
+    // 파일 생성 메서드
     private void makeFile(
             LocalDate date, String dataType, String userId, List<?> data, int count
     ) throws IOException {
+        // 최상위 디렉토리 : 날짜
         Path dateDir = baseDir.resolve(date.toString());
         Files.createDirectories(dateDir);
-
+        
+        // 그 다음 디렉토리 : 유저 ID
         Path userDir = dateDir.resolve(userId);
         Files.createDirectories(userDir);
-
+        
+        // Json 파일, CSV 파일 생성자
         ObjectMapper mapper = new ObjectMapper();
         CsvMapper csvMapper = new CsvMapper();
-
+        
+        // Json 파일 생성 (경로 : 날짜/유저ID/파일타입_수면회차.json)
         String fileName = dataType + "_" + count;
         Path jsonFile = userDir.resolve(fileName + ".json");
         mapper.writeValue(jsonFile.toFile(), data);
-
+        
+        // CSV 파일 생성 (경로 : 날짜/유저ID/파일타입_수면회차.csv)
         Path csvFile = userDir.resolve(fileName + ".csv");
         CsvSchema schema = csvMapper.schemaFor(data.get(0).getClass()).withHeader();  // 첫 줄에 헤더 포함
         csvMapper.writer(schema).writeValue(csvFile.toFile(), data);
         
+        // WFDB 파일 생성 (경로 : 날짜/유저ID/파일타입_수면회차.zip)
         translateFileForm(csvFile, userDir.resolve(fileName + ".zip"));
     }
-
+    
+    // 데이터 파일의 리스트를 조회
     public List<List<String>> readDataFileNameList(
             LocalDate startDate, LocalDate endDate, String userId
     ) {
@@ -278,7 +295,8 @@ public class SensorDataService {
 
         return result;
     }
-
+    
+    // 유저 ID와 날짜를 이용해서 데이터 검색
     public List<String> findFileByUserIdAndDate(String userId, LocalDate date) {
         Path dir = baseDir.resolve(date.toString());
         Path userDir = dir.resolve(userId);
@@ -291,7 +309,8 @@ public class SensorDataService {
             return Collections.EMPTY_LIST;
         }
     }
-
+    
+    // 파일 다운로드를 위한 경로 전달
     public Resource getFileForDownload(LocalDate date, String userId, String filename) throws IOException {
         Path file = baseDir.resolve(date.toString()).resolve(userId).resolve(filename);
         if (!Files.exists(file)) {
@@ -299,7 +318,8 @@ public class SensorDataService {
         }
         return new UrlResource(file.toUri());
     }
-
+    
+    // 데이터 개수 집계
     @Transactional
     public void dataCounting() {
         File directory = baseDir.toFile();
@@ -314,7 +334,8 @@ public class SensorDataService {
         DataCount dataCount = dataCountRepository.findById(1L).orElseThrow();
         dataCount.updateCount(count);
     }
-
+    
+    // 데이터 개수 세기
     private Long countFiles(File dir) {
         Long count = 0L;
         File[] files = dir.listFiles();
@@ -331,13 +352,15 @@ public class SensorDataService {
 
         return count;
     }
-
+    
+    // 파일 개수 조회
     @Transactional(readOnly = true)
     public Long getFileCount() {
         return dataCountRepository.findById(1L)
                 .orElseThrow().getCount();
     }
 
+    // 파일 업로드
     public void uploadFile(LocalDate date, String userId, MultipartFile multipartFile) throws IOException {
         Path dateDir = baseDir.toAbsolutePath().resolve(date.toString());
         Files.createDirectories(dateDir);
@@ -354,6 +377,7 @@ public class SensorDataService {
         multipartFile.transferTo(filePath.toFile());
     }
     
+    // WFDB 형식 파일 요청하기
     public void translateFileForm(Path sendFilePath, Path returnFilePath) {
         flaskClient.translateToWFDB(sendFilePath, returnFilePath.toAbsolutePath());
     }
