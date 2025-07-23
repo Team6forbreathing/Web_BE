@@ -3,7 +3,6 @@ package com.example.sleeping.authorized.presentation;
 import com.example.sleeping.admin.presentation.dto.UserResponse;
 import com.example.sleeping.authorized.application.AuthorizedUserService;
 import com.example.sleeping.data.application.SensorDataService;
-import com.example.sleeping.global.annotation.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
