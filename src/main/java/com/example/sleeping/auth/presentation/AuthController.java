@@ -63,7 +63,7 @@ public class AuthController {
 
     @GetMapping("/check")
     public ResponseEntity<?> accessTokenCheck(@RequestHeader("Authorization") String token) {
-        if(token.isEmpty() || token == null) {
+        if(token == null || token.isEmpty()) {
             return new ResponseEntity<>("Invalid token format. Expected 'Bearer <token>'.", HttpStatus.BAD_REQUEST);
         }
 
@@ -81,7 +81,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshTokenRotation(@RequestHeader("Authorization") String token) {
-        if(token.isEmpty() || token == null) {
+        if(token == null || token.isEmpty()) {
             return new ResponseEntity<>("Invalid token format. Expected 'Bearer <token>'.", HttpStatus.BAD_REQUEST);
         }
 
