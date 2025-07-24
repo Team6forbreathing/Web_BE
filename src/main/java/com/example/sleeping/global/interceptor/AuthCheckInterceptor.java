@@ -105,6 +105,6 @@ public class AuthCheckInterceptor implements HandlerInterceptor {
             throw CustomException.of(UserErrorCode.NO_AUTHORIZED_USER);
         }
         
-        return jwtTokenProvider.getClaimFromToken(token);
+        return jwtTokenProvider.tokenParsing(token);
     }
 }
