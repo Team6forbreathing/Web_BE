@@ -1,6 +1,5 @@
 package com.example.sleeping.global.scheduler;
 
-import com.example.sleeping.admin.application.AdminService;
 import com.example.sleeping.admin.presentation.dto.UserResponse;
 import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.user.application.UserService;
@@ -21,7 +20,6 @@ public class DataFileScheduler {
     private volatile boolean active = true;
     private final SensorDataService sensorDataService;
     private final UserService userService;
-    private final AdminService adminService;
 
     @Scheduled(cron = "0 30 10 * * *")
     public void scheduledWork() throws IOException {
@@ -29,7 +27,7 @@ public class DataFileScheduler {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfos()
+        List<String> userIds = userService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();
@@ -48,7 +46,7 @@ public class DataFileScheduler {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfos()
+        List<String> userIds = userService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();

@@ -5,7 +5,6 @@ import com.example.sleeping.data.application.SensorDataFacade;
 import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.data.application.dto.DataRequest;
 import com.example.sleeping.data.presentation.dto.SensorData;
-import com.example.sleeping.global.annotation.LoginUser;
 import com.example.sleeping.global.dto.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class SensorDataController {
     @PostMapping
     public ResponseEntity<?> createSensorData(
             @RequestBody SensorData sensorData,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) {
         DataRequest dataRequest = DataRequest.from(userId, sensorData);
         asyncQueueService.addRequestToQueue(dataRequest);
@@ -50,7 +49,7 @@ public class SensorDataController {
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) {
         List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
@@ -61,7 +60,7 @@ public class SensorDataController {
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("file") String filename,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) throws IOException {
         Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
 
@@ -84,7 +83,7 @@ public class SensorDataController {
     // 최근 측정한 데이터 조회
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentMeasureData(
-            @LoginUser String userId
+        @RequestAttribute("userId") String userId
     ) {
         List<String> fileList = sensorDataFacade.getRecentData(userId);
         return new ResponseEntity<>(fileList, HttpStatus.OK);

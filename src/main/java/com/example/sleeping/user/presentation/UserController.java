@@ -1,6 +1,5 @@
 package com.example.sleeping.user.presentation;
 
-import com.example.sleeping.global.annotation.LoginUser;
 import com.example.sleeping.global.dto.Message;
 import com.example.sleeping.user.application.UserService;
 import com.example.sleeping.user.presentation.dto.PassChangeRequest;
@@ -25,7 +24,7 @@ public class UserController {
     // 자신의 유저 데이터 조회
     @GetMapping("/info")
     public ResponseEntity<?> readMyUserData(
-            @LoginUser String userId
+        @RequestAttribute("userId") String userId
     ) {
         UserResponse userResponse = userService.readUserData(userId);
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
@@ -34,8 +33,8 @@ public class UserController {
     // 자신의 유저 데이터 업데이트
     @PatchMapping("/update")
     public ResponseEntity<?> updateMyUserData(
-            @LoginUser String userId,
-            @RequestBody String data
+        @RequestAttribute("userId") String userId,
+        @RequestBody String data
     ) throws JsonProcessingException {
         UserRequest userRequest = snakeMapper.readValue(data, UserRequest.class);
         userService.updateUserData(userId, userRequest);
@@ -49,8 +48,8 @@ public class UserController {
     // 자신의 비밀번호 업데이트
     @PatchMapping("/password")
     public ResponseEntity<?> updateMyUserPassword(
-            @LoginUser String userId,
-            @RequestBody String data
+        @RequestAttribute("userId") String userId,
+        @RequestBody String data
     ) throws JsonProcessingException {
         PassChangeRequest passChangeRequest = snakeMapper.readValue(data, PassChangeRequest.class);
         userService.updateUserPassword(userId, passChangeRequest);
@@ -64,7 +63,7 @@ public class UserController {
     // 유저 탈퇴
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteMyUserData(
-            @LoginUser String userId
+        @RequestAttribute("userId") String userId
     ) {
         userService.deleteUserData(userId);
 
@@ -77,8 +76,8 @@ public class UserController {
     // 비밀번호 검증
     @PostMapping("/pw_verify")
     public ResponseEntity<?> passwordVerifying(
-            @LoginUser String userId,
-            @RequestBody String data
+        @RequestAttribute("userId") String userId,
+        @RequestBody String data
     ) throws JsonProcessingException {
         UserRequest userRequest = snakeMapper.readValue(data, UserRequest.class);
         userService.verifyPassword(userId, userRequest.userPw());

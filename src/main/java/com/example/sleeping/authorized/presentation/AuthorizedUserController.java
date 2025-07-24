@@ -29,7 +29,6 @@ public class AuthorizedUserController {
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserInfos(
-            @AuthUser String userId,
             @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
         Page<UserResponse> userResponses = authorizedUserService.getAllUserInfos(pageable);
@@ -41,7 +40,6 @@ public class AuthorizedUserController {
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @AuthUser String auth,
             @PathVariable String userId
     ) {
         List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
@@ -52,7 +50,6 @@ public class AuthorizedUserController {
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("file") String filename,
-            @AuthUser String auth,
             @PathVariable String userId
     ) throws IOException {
         Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
@@ -70,7 +67,6 @@ public class AuthorizedUserController {
     public ResponseEntity<?> uploadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestPart("file") MultipartFile multipartFile,
-            @AuthUser String auth,
             @PathVariable String userId
     ) throws IOException {
         sensorDataService.uploadFile(date, userId, multipartFile);
