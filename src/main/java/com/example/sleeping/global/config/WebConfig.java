@@ -1,17 +1,12 @@
 package com.example.sleeping.global.config;
 
 import com.example.sleeping.auth.application.JwtTokenProvider;
-import com.example.sleeping.global.interceptor.AdminArgumentResolver;
 import com.example.sleeping.global.interceptor.AuthCheckInterceptor;
-import com.example.sleeping.global.interceptor.UserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -34,13 +29,17 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AuthCheckInterceptor(jwtTokenProvider))
             .addPathPatterns(
                 "/api/**",
-                "/admin/**"
+                "/auth/**",
+                "/user/**",
+                "/sensor/**",
+                "/authUser"
             )
             .excludePathPatterns(
-                "/api/auth/register",
-                "/api/auth/login",
-                "/api/auth/logout",
-                "/admin",
+                "/auth/register",
+                "/auth/login",
+                "/user/count",
+                "/sensor/count",
+                "/admin/loginPage",
                 "/error",
                 "/favicon.ico"
             );
