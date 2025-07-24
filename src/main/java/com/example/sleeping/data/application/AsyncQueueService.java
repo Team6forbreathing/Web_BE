@@ -24,7 +24,7 @@ public class AsyncQueueService {
         workerTaskExecutor.submit(() -> {
             sensorDataService.writeAccDataBulk(request.data().accList(), request.userId());
             sensorDataService.writePpgDataBulk(request.data().ppgList(), request.userId());
-            log.info(Thread.currentThread().getName() + " : Task 수행 완료");
+            log.info("{} : Task 수행 완료", Thread.currentThread().getName());
         });
     }
 }
