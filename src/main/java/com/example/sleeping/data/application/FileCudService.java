@@ -4,6 +4,7 @@ import com.example.sleeping.data.domain.DataCount;
 import com.example.sleeping.data.persisteent.DataCountRepository;
 import com.example.sleeping.data.presentation.dto.AccMeasurement;
 import com.example.sleeping.data.presentation.dto.PpgMeasurement;
+import com.example.sleeping.wfdb.FlaskClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -28,6 +29,7 @@ public class FileCudService {
     private final Path baseDir = Paths.get("/app/uploads");
     
     private final DataCountRepository dataCountRepository;
+    private final FlaskClient flaskClient;
     
     // 특정 date의 InfluxDB 내용을 파일화
     public boolean generateFilesForDate(
@@ -107,6 +109,14 @@ public class FileCudService {
         Path csvFile = userDir.resolve(fileName + ".csv");
         CsvSchema schema = csvMapper.schemaFor(data.get(0).getClass()).withHeader();  // 첫 줄에 헤더 포함
         csvMapper.writer(schema).writeValue(csvFile.toFile(), data);
+        
+        // WFDB 파일 생성 (경로 : 날짜/유저ID/파일타입_수면회차.zip)
+        translateFileForm(csvFile, userDir.resolve(fileName + ".zip"));
+    }
+    
+    // WFDB 형식 파일 요청하기
+    public void translateFileForm(Path sendFilePath, Path returnFilePath) {
+        flaskClient.translateToWFDB(sendFilePath, returnFilePath.toAbsolutePath());
     }
     
     // 데이터 개수 집계
