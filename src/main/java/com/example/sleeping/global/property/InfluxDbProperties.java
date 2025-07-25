@@ -7,5 +7,5 @@ public record InfluxDbProperties(
     String bucket,
     String org,
     String token,
-    String influxUrl
+    String url
 ) {}
