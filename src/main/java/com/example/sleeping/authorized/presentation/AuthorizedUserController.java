@@ -1,7 +1,7 @@
 package com.example.sleeping.authorized.presentation;
 
 import com.example.sleeping.admin.presentation.dto.UserResponse;
-import com.example.sleeping.data.application.SensorDataService;
+import com.example.sleeping.data.application.SensorDataFacade;
 import com.example.sleeping.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorizedUserController {
     private final UserService userService;
-    private final SensorDataService sensorDataService;
+    private final SensorDataFacade sensorDataFacade;
     
     // 유저 정보 조회
     @GetMapping("/user")
@@ -44,7 +44,7 @@ public class AuthorizedUserController {
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PathVariable String userId
     ) {
-        List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
+        List<List<String>> fileNameList = sensorDataFacade.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
     
@@ -55,7 +55,7 @@ public class AuthorizedUserController {
             @RequestParam("file") String filename,
             @PathVariable String userId
     ) throws IOException {
-        Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
+        Resource resource = sensorDataFacade.getFileForDownload(date, userId, filename);
 
         String contentType = "application/octat-stream; charset=utf-8";
 
@@ -73,7 +73,7 @@ public class AuthorizedUserController {
             @RequestPart("file") MultipartFile multipartFile,
             @PathVariable String userId
     ) throws IOException {
-        sensorDataService.uploadFile(date, userId, multipartFile);
+        sensorDataFacade.uploadFile(date, userId, multipartFile);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

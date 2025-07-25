@@ -2,7 +2,6 @@ package com.example.sleeping.data.presentation;
 
 import com.example.sleeping.data.application.AsyncQueueService;
 import com.example.sleeping.data.application.SensorDataFacade;
-import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.data.application.dto.DataRequest;
 import com.example.sleeping.data.presentation.dto.SensorData;
 import com.example.sleeping.global.dto.Message;
@@ -26,7 +25,6 @@ import java.util.List;
 @RequestMapping("/sensor")
 public class SensorDataController {
     private final AsyncQueueService asyncQueueService;
-    private final SensorDataService sensorDataService;
     private final SensorDataFacade sensorDataFacade;
 
     // 센서 데이터 받아서 influxDB에 저장
@@ -51,7 +49,7 @@ public class SensorDataController {
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestAttribute("userId") String userId
     ) {
-        List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
+        List<List<String>> fileNameList = sensorDataFacade.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
     
@@ -62,7 +60,7 @@ public class SensorDataController {
             @RequestParam("file") String filename,
             @RequestAttribute("userId") String userId
     ) throws IOException {
-        Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
+        Resource resource = sensorDataFacade.getFileForDownload(date, userId, filename);
 
         String contentType = "application/octat-stream; charset=utf-8";
 
@@ -76,7 +74,7 @@ public class SensorDataController {
     // 파일의 개수 조회
     @GetMapping("/count")
     public ResponseEntity<?> getFileCount() {
-        Long count = sensorDataService.getFileCount();
+        Long count = sensorDataFacade.getFileCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
     
