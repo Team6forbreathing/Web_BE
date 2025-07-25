@@ -42,4 +42,4 @@ influxdb:
 flask:
   url: ${FLASK_SERVER_URL}
 server:
-  port: 88
+  port: 8080
