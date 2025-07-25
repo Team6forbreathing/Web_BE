@@ -14,6 +14,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InfluxDbService {
@@ -33,12 +35,11 @@ public class InfluxDbService {
     @PostConstruct
     private void init() {
         client = InfluxDBClientFactory.create(
-            properties.influxUrl(),
+            properties.url(),
             properties.token().toCharArray(),
             properties.org(),
             properties.bucket()
         );
-        
         writeApi = client.getWriteApiBlocking();
     }
     
