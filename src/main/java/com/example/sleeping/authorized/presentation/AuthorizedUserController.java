@@ -1,9 +1,8 @@
 package com.example.sleeping.authorized.presentation;
 
 import com.example.sleeping.admin.presentation.dto.UserResponse;
-import com.example.sleeping.authorized.application.AuthorizedUserService;
-import com.example.sleeping.data.application.SensorDataService;
-import com.example.sleeping.global.annotation.AuthUser;
+import com.example.sleeping.data.application.SensorDataFacade;
+import com.example.sleeping.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -25,38 +24,38 @@ import java.util.List;
 @RequestMapping("/authUser")
 @RequiredArgsConstructor
 public class AuthorizedUserController {
-    private final AuthorizedUserService authorizedUserService;
-    private final SensorDataService sensorDataService;
-
+    private final UserService userService;
+    private final SensorDataFacade sensorDataFacade;
+    
+    // 유저 정보 조회
     @GetMapping("/user")
     public ResponseEntity<?> getUserInfos(
-            @AuthUser String userId,
             @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
-        Page<UserResponse> userResponses = authorizedUserService.getAllUserInfos(pageable);
+        Page<UserResponse> userResponses = userService.getAllUserInfos(pageable);
 
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
-
+    
+    // 특정 유저의 특정 기간 동안의 센서 데이터 파일을 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @AuthUser String auth,
             @PathVariable String userId
     ) {
-        List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
+        List<List<String>> fileNameList = sensorDataFacade.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
-
+    
+    // 특정 날짜의 특정 센서 데이터 파일을 다운로드
     @GetMapping("/user/{userId}/download")
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("file") String filename,
-            @AuthUser String auth,
             @PathVariable String userId
     ) throws IOException {
-        Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
+        Resource resource = sensorDataFacade.getFileForDownload(date, userId, filename);
 
         String contentType = "application/octat-stream; charset=utf-8";
 
@@ -66,15 +65,15 @@ public class AuthorizedUserController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
-
+    
+    // 특정 유저의 특정 날짜 기록에 특정 파일을 저장
     @PostMapping("/user/{userId}/upload")
     public ResponseEntity<?> uploadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestPart("file") MultipartFile multipartFile,
-            @AuthUser String auth,
             @PathVariable String userId
     ) throws IOException {
-        sensorDataService.uploadFile(date, userId, multipartFile);
+        sensorDataFacade.uploadFile(date, userId, multipartFile);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

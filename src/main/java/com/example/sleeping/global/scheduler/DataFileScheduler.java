@@ -1,8 +1,7 @@
 package com.example.sleeping.global.scheduler;
 
-import com.example.sleeping.admin.application.AdminService;
 import com.example.sleeping.admin.presentation.dto.UserResponse;
-import com.example.sleeping.data.application.SensorDataService;
+import com.example.sleeping.data.application.SensorDataFacade;
 import com.example.sleeping.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataFileScheduler {
     private volatile boolean active = true;
-    private final SensorDataService sensorDataService;
+    private final SensorDataFacade sensorDataFacade;
     private final UserService userService;
-    private final AdminService adminService;
 
     @Scheduled(cron = "0 30 10 * * *")
     public void scheduledWork() throws IOException {
@@ -29,13 +27,13 @@ public class DataFileScheduler {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfos()
+        List<String> userIds = userService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();
 
         for (String userId : userIds) {
-            if(sensorDataService.generateFilesForDate(LocalDate.now().minusDays(1), userId)) {
+            if(sensorDataFacade.generateFilesForDate(LocalDate.now().minusDays(1), userId)) {
                 userService.updateMeasuredDate(LocalDate.now().minusDays(1), userId);
             }
         }
@@ -43,18 +41,19 @@ public class DataFileScheduler {
         log.info("데이터 파일화 스케쥴링 동작 완료 : " + LocalDateTime.now());
     }
 
+    // 강제 실행
     public void scheduledWork(LocalDate target) throws IOException {
         if(!active) {
             return;
         }
 
-        List<String> userIds = adminService.getAllUserInfos()
+        List<String> userIds = userService.getAllUserInfos()
                 .stream()
                 .map(UserResponse::userId)
                 .toList();
 
         for (String userId : userIds) {
-            if(sensorDataService.generateFilesForDate(target, userId)) {
+            if(sensorDataFacade.generateFilesForDate(target, userId)) {
                 userService.updateMeasuredDate(target, userId);
             }
         }

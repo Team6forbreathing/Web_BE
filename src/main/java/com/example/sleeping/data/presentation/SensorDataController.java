@@ -2,10 +2,8 @@ package com.example.sleeping.data.presentation;
 
 import com.example.sleeping.data.application.AsyncQueueService;
 import com.example.sleeping.data.application.SensorDataFacade;
-import com.example.sleeping.data.application.SensorDataService;
 import com.example.sleeping.data.application.dto.DataRequest;
 import com.example.sleeping.data.presentation.dto.SensorData;
-import com.example.sleeping.global.annotation.LoginUser;
 import com.example.sleeping.global.dto.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +25,13 @@ import java.util.List;
 @RequestMapping("/sensor")
 public class SensorDataController {
     private final AsyncQueueService asyncQueueService;
-    private final SensorDataService sensorDataService;
     private final SensorDataFacade sensorDataFacade;
 
     // 센서 데이터 받아서 influxDB에 저장
     @PostMapping
     public ResponseEntity<?> createSensorData(
             @RequestBody SensorData sensorData,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) {
         DataRequest dataRequest = DataRequest.from(userId, sensorData);
         asyncQueueService.addRequestToQueue(dataRequest);
@@ -50,9 +47,9 @@ public class SensorDataController {
     public ResponseEntity<?> getSensorDataFileList(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) {
-        List<List<String>> fileNameList = sensorDataService.readDataFileNameList(startDate, endDate, userId);
+        List<List<String>> fileNameList = sensorDataFacade.readDataFileNameList(startDate, endDate, userId);
         return new ResponseEntity<>(fileNameList, HttpStatus.OK);
     }
     
@@ -61,9 +58,9 @@ public class SensorDataController {
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("file") String filename,
-            @LoginUser String userId
+            @RequestAttribute("userId") String userId
     ) throws IOException {
-        Resource resource = sensorDataService.getFileForDownload(date, userId, filename);
+        Resource resource = sensorDataFacade.getFileForDownload(date, userId, filename);
 
         String contentType = "application/octat-stream; charset=utf-8";
 
@@ -77,14 +74,14 @@ public class SensorDataController {
     // 파일의 개수 조회
     @GetMapping("/count")
     public ResponseEntity<?> getFileCount() {
-        Long count = sensorDataService.getFileCount();
+        Long count = sensorDataFacade.getFileCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
     
     // 최근 측정한 데이터 조회
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentMeasureData(
-            @LoginUser String userId
+        @RequestAttribute("userId") String userId
     ) {
         List<String> fileList = sensorDataFacade.getRecentData(userId);
         return new ResponseEntity<>(fileList, HttpStatus.OK);

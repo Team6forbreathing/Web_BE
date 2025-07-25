@@ -18,6 +18,11 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
+# log
+logging:
+  level:
+    root: INFO
+
 # auth
 secret:
   key : ${SECRET_KEY}
@@ -36,3 +41,5 @@ influxdb:
 # flask
 flask:
   url: ${FLASK_SERVER_URL}
+server:
+  port: 8080

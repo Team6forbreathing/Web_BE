@@ -9,10 +9,13 @@ import com.example.sleeping.user.presentation.dto.UserRequest;
 import com.example.sleeping.user.presentation.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -102,5 +105,37 @@ public class UserService {
         );
 
         user.updateMeasureInfo(date);
+    }
+    
+    // 어드민 동작
+    // 모든 유저의 정보를 조회 (관리자 페이지에서 사용)
+    @Transactional(readOnly = true)
+    public Page<com.example.sleeping.admin.presentation.dto.UserResponse> getAllUserInfos(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                   .map(com.example.sleeping.admin.presentation.dto.UserResponse::from);
+    }
+    
+    // 모든 유저의 정보를 조회 (스케줄러에서 사용 )
+    @Transactional(readOnly = true)
+    public List<com.example.sleeping.admin.presentation.dto.UserResponse> getAllUserInfos() {
+        return userRepository.findAll().stream()
+                   .map(com.example.sleeping.admin.presentation.dto.UserResponse::from)
+                   .toList();
+    }
+    
+    // 사용자 인가
+    @Transactional
+    public void granting(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> CustomException.of(UserErrorCode.NOT_FOUND)
+        );
+        
+        user.grant();
+    }
+    
+    // 사용자 삭제
+    @Transactional
+    public void delete(Long userId) {
+        userRepository.deleteById(userId);
     }
 }

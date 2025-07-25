@@ -26,8 +26,7 @@ $(document).ready(function() {
             datatype : "json",
             data : JSON.stringify(user),
             success : function(res) {
-                var value = res['accessToken'];
-                successLogin(value);
+                successLogin();
             },
             error : function(err){
                 alert("로그인 실패! 아이디나 비밀번호를 확인하세요");
@@ -36,7 +35,6 @@ $(document).ready(function() {
     });
 });
 
-function successLogin(value) {
-    localStorage.clear();
+function successLogin() {
     window.location.href = "/admin";
 }

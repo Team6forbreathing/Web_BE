@@ -7,4 +7,4 @@ docker build -t apnea-guard:latest .
 docker rm -f apnea-guard-server 2>/dev/null || true
 
 # 새 컨테이너 실행
-docker run -d --name apnea-guard-server --env-file .env -p 8080:8080 apnea-guard:latest
+docker run -d --name apnea-guard-server --env-file .env -p 88:88 apnea-guard:latest

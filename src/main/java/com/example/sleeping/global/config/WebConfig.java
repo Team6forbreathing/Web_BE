@@ -1,20 +1,17 @@
 package com.example.sleeping.global.config;
 
-import com.example.sleeping.global.resolver.AdminArgumentResolver;
-import com.example.sleeping.global.resolver.UserArgumentResolver;
+import com.example.sleeping.auth.application.JwtTokenProvider;
+import com.example.sleeping.global.interceptor.AuthCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    private final UserArgumentResolver userArgumentResolver;
-    private final AdminArgumentResolver adminArgumentResolver;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -26,10 +23,25 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
-
+    
     @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(userArgumentResolver);
-        resolvers.add(adminArgumentResolver);
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AuthCheckInterceptor(jwtTokenProvider))
+            .addPathPatterns(
+                "/api/**",
+                "/auth/**",
+                "/user/**",
+                "/sensor/**",
+                "/authUser"
+            )
+            .excludePathPatterns(
+                "/auth/register",
+                "/auth/login",
+                "/user/count",
+                "/sensor/count",
+                "/admin/loginPage",
+                "/error",
+                "/favicon.ico"
+            );
     }
 }
