@@ -99,7 +99,7 @@ public class AuthCheckInterceptor implements HandlerInterceptor {
             throw CustomException.of(UserErrorCode.NO_ADMIN);
         }
         
-        if(uri.startsWith("/api/admin/authUser") &&
+        if(uri.startsWith("/api/authUser") &&
                (!jwtTokenProvider.tokenRole(token).equals("ADMIN") && !jwtTokenProvider.tokenRole(token).equals("AUTHORIZED_USER"))
         ) {
             throw CustomException.of(UserErrorCode.NO_AUTHORIZED_USER);
